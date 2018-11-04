@@ -1,0 +1,14 @@
+.idea
+packages
+
+LinqMeta/.idea
+LinqMeta/bin
+LinqMeta/obj
+
+LinqMetaTest/.idea
+LinqMetaTest/bin
+LinqMetaTest/obj
+
+Benchmark/.idea
+Benchmark/bin
+Benchmark/obj
