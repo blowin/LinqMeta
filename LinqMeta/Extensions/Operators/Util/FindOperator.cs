@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
 
@@ -10,18 +9,36 @@ namespace LinqMeta.Extensions.Operators.Util
             where TCollection : struct, ICollectionWrapper<T>
             where TCond : struct, IFunctor<T, T, bool>
         {
-            var size = collection.Size;
-            if (size > 0)
+            if (collection.HasIndexOverhead)
             {
-                var item = collection[0];
-                for (var i = 1u; i < size; ++i)
+                if (collection.HasNext)
                 {
-                    var curItem = collection[i];
-                    if (cond.Invoke(curItem, item))
-                        item = curItem;
-                }
+                    var firstItem = collection.Value;
+                    while (collection.HasNext)
+                    {
+                        var item = collection.Value;
+                        if (cond.Invoke(item, firstItem))
+                            firstItem = item;
+                    }
 
-                return item;
+                    return firstItem;
+                }
+            }
+            else
+            {
+                var size = collection.Size;
+                if (size > 0)
+                {
+                    var firstItem = collection[0];
+                    for (var i = 1u; i < size; ++i)
+                    {
+                        var curItem = collection[i];
+                        if (cond.Invoke(curItem, firstItem))
+                            firstItem = curItem;
+                    }
+
+                    return firstItem;
+                }
             }
 
             return default(T);

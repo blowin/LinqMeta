@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Void = LinqMeta.Core.Void;
 
 namespace LinqMeta.Functors
 {

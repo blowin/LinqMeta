@@ -1,13 +1,30 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace LinqMeta.CollectionWrapper
 {
-    public struct ListWrapper<T> : ICollectionWrapper<T>
+    public struct ListWrapper<T> 
+        : ICollectionWrapper<T>
     {
         private List<T> _list;
+
+        public bool HasIndexOverhead
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return false; }
+        }
+
+        public bool HasNext
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return false; }
+        }
+
+        public T Value
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return default(T); }
+        }
 
         public int Size
         {
@@ -23,16 +40,8 @@ namespace LinqMeta.CollectionWrapper
         
         public ListWrapper(List<T> list)
         {
-            if(list == null)
-                throw new ArgumentNullException();
-
+            ErrorUtil.NullCheck(list, "list");
             _list = list;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Option<T> ElementAt(uint index)
-        {
-            return index < _list.Count ? new Option<T>(_list[(int) index]) : Option<T>.None;
         }
     }
 }

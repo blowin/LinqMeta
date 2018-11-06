@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
 
-namespace LinqMeta.Extensions.Operators.Aggregate
+namespace LinqMeta.Extensions.Operators
 {
     public static class AggregateOperator
     {
@@ -11,9 +11,17 @@ namespace LinqMeta.Extensions.Operators.Aggregate
             where TCollect : struct, ICollectionWrapper<T>
             where TFolder : struct , IFunctor<TRes, T, TRes>
         {
-            var size = collect.Size;
-            for (var i = 0u; i < size; ++i)
-                init = folder.Invoke(init, collect[i]);
+            if (collect.HasIndexOverhead)
+            {
+                while (collect.HasNext)
+                    init = folder.Invoke(init, collect.Value);
+            }
+            else
+            {
+                var size = collect.Size;
+                for (var i = 0u; i < size; ++i)
+                    init = folder.Invoke(init, collect[i]);
+            }
 
             return init;
         }
@@ -22,14 +30,28 @@ namespace LinqMeta.Extensions.Operators.Aggregate
             where TCollect : struct, ICollectionWrapper<T>
             where TFolder : struct , IFunctor<T, T, T>
         {
-            var size = collect.Size;
-            if (size > 0)
+            if (collect.HasIndexOverhead)
             {
-                var init = collect[0];
-                for (var i = 1u; i < size; ++i)
-                    init = folder.Invoke(init, collect[i]);
+                if (collect.HasNext)
+                {
+                    var init = collect.Value;
+                    while (collect.HasNext)
+                        init = folder.Invoke(init, collect.Value);
 
-                return init;
+                    return init;
+                }
+            }
+            else
+            {
+                var size = collect.Size;
+                if (size > 0)
+                {
+                    var init = collect[0];
+                    for (var i = 1u; i < size; ++i)
+                        init = folder.Invoke(init, collect[i]);
+
+                    return init;
+                }
             }
 
             return default(T);

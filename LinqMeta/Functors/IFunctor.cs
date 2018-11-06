@@ -1,3 +1,5 @@
+using LinqMeta.Core;
+
 namespace LinqMeta.Functors
 {
     public interface IFunctor<TRes>

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace LinqMeta
+namespace LinqMeta.Core
 {
     public struct Option<T> : 
         IEquatable<T>, 

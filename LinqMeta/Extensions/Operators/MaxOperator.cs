@@ -5,7 +5,7 @@ using LinqMeta.Extensions.Operators.Util;
 using LinqMeta.Functors;
 using LinqMeta.Operators.Numbers;
 
-namespace LinqMeta.Extensions.Operators.Max
+namespace LinqMeta.Extensions.Operators
 {
     public static class MaxOperator
     {
@@ -28,7 +28,6 @@ namespace LinqMeta.Extensions.Operators.Max
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T MaxMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
-            where T : struct
         {
             return collect.MaxMeta<TCollect, GreaterThan<T>, T>(default(GreaterThan<T>));
         }

@@ -1,11 +1,10 @@
-using System;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Extensions.Operators.Util;
 using LinqMeta.Functors;
 using LinqMeta.Operators.Numbers;
 
-namespace LinqMeta.Extensions.Operators.Min
+namespace LinqMeta.Extensions.Operators
 {
     public static class MinOperator
     {
@@ -21,7 +20,6 @@ namespace LinqMeta.Extensions.Operators.Min
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T MinMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
-            where T : struct
         {
             return collect.MinMeta<TCollect, LessThanOperator<T>, T>(default(LessThanOperator<T>));
         }

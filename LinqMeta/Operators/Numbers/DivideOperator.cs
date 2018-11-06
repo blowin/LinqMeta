@@ -5,7 +5,6 @@ using LinqMeta.Functors;
 namespace LinqMeta.Operators.Numbers
 {
     public struct DivideOperator<T> : IFunctor<T, double, double>
-        where T : struct 
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double Invoke(T a, double b)

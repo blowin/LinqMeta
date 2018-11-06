@@ -5,7 +5,6 @@ using LinqMeta.Functors;
 namespace LinqMeta.Operators.Numbers
 {
     public struct SumOperator<T> : IFunctor<T, T, T>
-        where T : struct 
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Invoke(T a, T b)

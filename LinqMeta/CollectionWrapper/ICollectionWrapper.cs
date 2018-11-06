@@ -2,9 +2,13 @@ namespace LinqMeta.CollectionWrapper
 {
     public interface ICollectionWrapper<T>
     {
-        int Size { get; }
+        bool HasIndexOverhead { get; }
 
-        Option<T> ElementAt(uint index);
+        bool HasNext { get; }
+        
+        T Value { get; }
+        
+        int Size { get; }
         
         T this[uint index] { get; }
     }

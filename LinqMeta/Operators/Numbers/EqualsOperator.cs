@@ -5,7 +5,6 @@ using LinqMeta.Functors;
 namespace LinqMeta.Operators.Numbers
 {
     public struct EqualsOperator<T> : IFunctor<T, T, bool>
-        where T : struct 
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Invoke(T a, T b)

@@ -4,8 +4,4 @@
         <TargetFrameworks>net461;netstandard1.3;netcoreapp2.0</TargetFrameworks>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Extensions\Operators\Max" />
-    </ItemGroup>
-
 </Project>
