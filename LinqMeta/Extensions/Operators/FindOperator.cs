@@ -1,7 +1,7 @@
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
 
-namespace LinqMeta.Extensions.Operators.Util
+namespace LinqMeta.Extensions.Operators
 {
     public static class FindOperator
     {

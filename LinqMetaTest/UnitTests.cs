@@ -102,6 +102,33 @@ namespace LinqMetaTest
         }
         
         [Fact]
+        public void MaxMin()
+        {
+            var minLinq = arr.Min();
+            var maxLinq = arr.Max();
+
+            var maxMinMeta = arr.MetaOperators().MaxMin().GetValueOrDefault();
+            
+            Assert.Equal(minLinq, maxMinMeta.Min);
+            Assert.Equal(maxLinq, maxMinMeta.Max);
+        }
+        
+        [Fact]
+        public void All()
+        {
+            Assert.Equal(arr.All(i => i < 100), arr.MetaOperators().All(i => i < 100));
+            
+            Assert.Equal(arr.All(i => i == 5), arr.MetaOperators().All(i => i == 5));
+        }
+        
+        [Fact]
+        public void Any()
+        {
+            Assert.Equal(arr.Any(), arr.MetaOperators().Any());
+            Assert.Equal(arr.Any(i => i == 11), arr.MetaOperators().Any(i => i == 11));
+        }
+        
+        [Fact]
         public void Statistic()
         {
             var flags = new StatisticFlags().Add(StatisticValue.Sum);

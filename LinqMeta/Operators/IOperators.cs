@@ -13,6 +13,9 @@ namespace LinqMeta.Operators
         IElementAt<T>,
         IEmpty,
         IStatistic<T>,
+        IMaxMin<T>,
+        IAny<T>,
+        IAll<T>,
 
         ISelect<TCollect, T>,
         ISelectIndex<TCollect, T>,

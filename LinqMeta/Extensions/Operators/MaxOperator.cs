@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Extensions.Operators.Util;
 using LinqMeta.Functors;
 using LinqMeta.Operators.Numbers;
 

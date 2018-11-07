@@ -62,6 +62,26 @@ namespace LinqMeta.CollectionWrapper
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MinMaxPair<T>? MaxMin<TMaxComparer, TMinComparer>(TMaxComparer maxComparer, TMinComparer minComparer) 
+            where TMaxComparer : struct, IFunctor<T, T, bool> 
+            where TMinComparer : struct, IFunctor<T, T, bool>
+        {
+            return _collect.MaxMinMeta<TCollect, TMaxComparer, TMinComparer, T>(maxComparer, minComparer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MinMaxPair<T>? MaxMin(Func<T, T, bool> maxComparer, Func<T, T, bool> minComparer)
+        {
+            return _collect.MaxMinMeta<TCollect, FuncFunctor<T, T, bool>, FuncFunctor<T, T, bool>, T>(new FuncFunctor<T, T, bool>(maxComparer), new FuncFunctor<T, T, bool>(minComparer));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MinMaxPair<T>? MaxMin()
+        {
+            return _collect.MaxMinMeta<TCollect, T>();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TRes Aggregate<TFolder, TRes>(TRes init, TFolder folder) where TFolder : struct, IFunctor<TRes, T, TRes>
         {
             return _collect.AggregateMeta<TCollect, TFolder, T, TRes>(init, folder);
@@ -120,6 +140,38 @@ namespace LinqMeta.CollectionWrapper
         public StatisticInfo<T>? GetStatistic(StatisticFlags statisticFlags)
         {
             return _collect.GetStatisticMeta<TCollect, T>(statisticFlags);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Any()
+        {
+            return _collect.AnyMeta<TCollect, T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Any<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return _collect.AnyMeta<TCollect, TFilter, T>(filter);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Any(Func<T, bool> filter)
+        {
+            return _collect.AnyMeta<TCollect, FuncFunctor<T, bool>, T>(new FuncFunctor<T, bool>(filter));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool All<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return _collect.AllMeta<TCollect, TFilter, T>(filter);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool All(Func<T, bool> filter)
+        {
+            return _collect.AllMeta<TCollect, FuncFunctor<T, bool>, T>(new FuncFunctor<T, bool>(filter));
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

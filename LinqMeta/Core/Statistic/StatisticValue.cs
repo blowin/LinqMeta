@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace LinqMeta.Core.Statistic
 {
     public enum StatisticValue : byte
@@ -7,31 +5,5 @@ namespace LinqMeta.Core.Statistic
         Sum = 0x1, 
         Minus = 0x2, 
         Product = 0x3,
-    }
-
-    public struct StatisticFlags
-    {
-        private byte _flags;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public StatisticFlags Add(StatisticValue statisticValue)
-        {
-            _flags |= (byte)statisticValue;
-            return this;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddAll()
-        {
-            _flags |= (byte) StatisticValue.Sum | 
-                      (byte) StatisticValue.Minus | 
-                      (byte) StatisticValue.Minus;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has(StatisticValue val)
-        {
-            return (_flags & (byte) val) == (byte) val;
-        }
     }
 }
