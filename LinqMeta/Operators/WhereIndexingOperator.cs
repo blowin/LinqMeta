@@ -14,7 +14,7 @@ namespace LinqMeta.Operators
         private TCollect _collect;
         private TFilter _filter;
 
-        private int _index;
+        private uint _index;
         private T _item;
 
         public bool HasIndexOverhead
@@ -33,31 +33,23 @@ namespace LinqMeta.Operators
                     while (_collect.HasNext)
                     {
                         _item = _collect.Value;
-                        if (_filter.Invoke(new ZipPair<T>(_index, _item)))
-                        {
-                            ++_index;
+                        if (_filter.Invoke(new ZipPair<T>((int) _index++, _item)))
                             return true;
-                        }
                     }
-
-                    _index = 0;
-                    return false;
                 }
                 else
                 {
-                    for (; _index < _collect.Size; ++_index)
+                    var size = _collect.Size;
+                    while (_index < size)
                     {
-                        _item = _collect[(uint) _index];
-                        if (_filter.Invoke(new ZipPair<T>(_index, _item)))
-                        {
-                            ++_index;
+                        _item = _collect[_index];
+                        if (_filter.Invoke(new ZipPair<T>((int) _index++, _item)))
                             return true;
-                        }
                     }
-
-                    _index = 0;
-                    return false;
                 }
+                
+                _index = 0;
+                return false;
             }
         }
 

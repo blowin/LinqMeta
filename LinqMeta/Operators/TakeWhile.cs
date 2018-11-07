@@ -6,14 +6,14 @@ using LinqMeta.Functors;
 namespace LinqMeta.Operators
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct WhereOperator<TCollect, TFilter, T> : ICollectionWrapper<T>
+    public struct TakeWhile<TCollect, TFilter, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
-        where TFilter : struct , IFunctor<T, bool>
+        where TFilter : struct, IFunctor<T, bool>
     {
-        private TCollect _collect;
+        private TCollect _oldCollect;
         private TFilter _filter;
 
-        private uint _index;
+        private int _index;
         private T _item;
         
         public bool HasIndexOverhead
@@ -27,29 +27,31 @@ namespace LinqMeta.Operators
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (_collect.HasIndexOverhead)
+                if (_oldCollect.HasIndexOverhead)
                 {
-                    while (_collect.HasNext)
+                    if (_oldCollect.HasNext)
                     {
-                        _item = _collect.Value;
+                        _item = _oldCollect.Value;
                         if (_filter.Invoke(_item))
                             return true;
                     }
                 }
                 else
                 {
-                    var sz = _collect.Size;
-                    while (_index < sz)
+                    var size = _oldCollect.Size;
+                    if (_index < size)
                     {
-                        _item = _collect[_index];
-                        ++_index;
+                        _item = _oldCollect[(uint) _index];
                         if (_filter.Invoke(_item))
+                        {
+                            ++_index;
                             return true;
+                        }
+                        
+                        _index = 0;   
                     }
-
-                    _index = 0;
                 }
-
+                
                 return false;
             }
         }
@@ -60,21 +62,21 @@ namespace LinqMeta.Operators
             get { return _item; }
         }
 
-        public int Size
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return 0; }
-        }
-
         public T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get { return default(T); }
         }
 
-        public WhereOperator(TCollect collect, TFilter filter)
+        public int Size
         {
-            _collect = collect;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return 0; }
+        }
+
+        public TakeWhile(TCollect oldCollect, TFilter filter)
+        {
+            _oldCollect = oldCollect;
             _filter = filter;
 
             _index = 0;

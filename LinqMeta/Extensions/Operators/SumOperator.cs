@@ -15,7 +15,7 @@ namespace LinqMeta.Extensions.Operators
                 {
                     checked
                     {
-                        sum = default(SumOperator<T>).Invoke(sum, collect.Value);
+                        sum = NumberOperators<T>.Sum(sum, collect.Value);
                     }
                 }
             }
@@ -26,7 +26,7 @@ namespace LinqMeta.Extensions.Operators
                 {
                     checked
                     {
-                        sum = default(SumOperator<T>).Invoke(sum, collect[i]);
+                        sum = NumberOperators<T>.Sum(sum, collect[i]);
                     }   
                 }   
             }

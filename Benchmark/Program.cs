@@ -36,7 +36,7 @@ namespace Benchmark
                 _list.Add(rnd.Next(10));
             }
         }
-
+/*
         #region Sum
 
         [Benchmark]
@@ -49,8 +49,8 @@ namespace Benchmark
         public int SumLinqFaster() => _list.SumF();
 
         #endregion
-        
-
+   */
+        /*
         #region Min
 
         [Benchmark]
@@ -63,8 +63,8 @@ namespace Benchmark
         public int MinLinqFaster() => _list.MinF();
 
         #endregion
-
-        
+      */
+        /*
         #region Aggregate
 
         [Benchmark]
@@ -80,7 +80,8 @@ namespace Benchmark
         public int AggregateLinqFaster() => _list.AggregateF((i, i1) => i * i1);
 
         #endregion
-
+*/
+     /*
         #region SelectSum
 
         [Benchmark]
@@ -93,8 +94,8 @@ namespace Benchmark
         public double SelectSumLinqFaster() => _list.AggregateF((i, i1) => i * i1);
 
         #endregion
-
-        
+ */
+  /*      
         #region SelectWhereSum
 
         [Benchmark]
@@ -111,7 +112,8 @@ namespace Benchmark
         public long SelectWhereSumLinqFaster() => _list.SelectF(i => (long)i).WhereSumF(l => l % 2 == 0);
 
         #endregion
-        
+  */
+  /*      
         #region SelectSum
 
         [Benchmark]
@@ -128,6 +130,7 @@ namespace Benchmark
         public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).TakeF(2000).SumF();
 
         #endregion
+  */      
     }
     
     public class Program

@@ -1,6 +1,6 @@
 using LinqMeta.Core;
 
-namespace LinqMeta.Extensions.Operators.IOperator
+namespace LinqMeta.Operators.IOperator
 {
     public interface IFirst<T>
     {

@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using LinqMeta.CollectionWrapper;
+using LinqMeta.Core.Statistic;
 using LinqMeta.Extensions;
 using LinqMeta.Extensions.Converters;
 using LinqMeta.Extensions.Operators;
@@ -16,44 +18,46 @@ namespace LinqMetaTest
         [Fact]
         public void Sum()
         {
-            Assert.Equal(arr.Sum(), arr.MetaOperators().SumMeta());
+            Assert.Equal(arr.Sum(), arr.MetaOperators().Sum());
         }
         
         [Fact]
         public void Min()
         {
-            Assert.Equal(arr.Min(), arr.MetaOperators().MinMeta());
+            Assert.Equal(arr.Min(), arr.MetaOperators().Min());
         }
         
         [Fact]
         public void Max()
         {
-            Assert.Equal(arr.Max(), arr.MetaOperators().MaxMeta());
+            Assert.Equal(arr.Max(), arr.MetaOperators().Max());
         }
         
         [Fact]
         public void Aggregate()
         {
-            Assert.Equal(arr.Aggregate(1.0, (i, i1) => i / i1), arr.MetaOperators().AggregateMeta(1.0, (i, i1) => i / i1));
+            Assert.Equal(arr.Aggregate(1.0, (i, i1) => i / i1), arr.MetaOperators().Aggregate(1.0, (i, i1) => i / i1));
         }
 
         [Fact]
         public void Select()
         {
-            Assert.Equal(arr.Select(i => (double)i).Sum(), arr.MetaOperators().SelectMeta(i => (double)i).SumMeta());
+            Assert.Equal(arr.Select(i => (double)i).Sum(), arr.MetaOperators().Select(i => (double)i).Sum());
         }
 
         [Fact]
         public void Where()
         {
-            Assert.Equal(arr.Where(i => i % 2 == 0).ToArray().Sum(), arr.MetaOperators().WhereMeta(i => i % 2 == 0).SumMeta());
+            var first = arr.Where(i => i % 2 == 0).Sum();
+            var second = arr.MetaOperators().Where(i => i % 2 == 0).Sum();
+            Assert.Equal(first, second);
         }
 
         [Fact]
         public void SelectIndex()
         {
             var first = arr.Select((i, i1) => i + i1).Sum();
-            var second = arr.MetaOperators().SelectIndexMeta(pair => pair.Index + pair.Item).SumMeta();
+            var second = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Sum();
             Assert.Equal(first, second);
         }
         
@@ -61,7 +65,7 @@ namespace LinqMetaTest
         public void WhereIndex()
         {
             var first = arr.Where((i, i1) => i1 < 4).Sum();
-            var second = arr.MetaOperators().WhereIndexMeta(pair => pair.Index < 4).SumMeta();
+            var second = arr.MetaOperators().WhereIndex(pair => pair.Index < 4).Sum();
             Assert.Equal(first, second);
         }
         
@@ -69,7 +73,23 @@ namespace LinqMetaTest
         public void Take()
         {
             var first = arr.Take(14).Sum();
-            var second = arr.MetaOperators().TakeMeta(14).SumMeta();
+            var second = arr.MetaOperators().Take(14).Sum();
+            Assert.Equal(first, second);
+        }
+        
+        [Fact]
+        public void TakeWhile()
+        {
+            var first = arr.TakeWhile(i => i.InEq(1, 2, 3, 6, 7)).Sum();
+            var second = arr.MetaOperators().TakeWhile(i => i.InEq(1, 2, 3, 6, 7)).Sum();
+            Assert.Equal(first, second);
+        }
+        
+        [Fact]
+        public void TakeWhileIndex()
+        {
+            var first = arr.TakeWhile((i, i1) => i1 != 6).Sum();
+            var second = arr.MetaOperators().TakeWhileIndex(pair => pair.Index != 6).Sum();
             Assert.Equal(first, second);
         }
         
@@ -77,8 +97,20 @@ namespace LinqMetaTest
         public void WhereSelectSum()
         {
             var first = arr.Where(i => i % 2 == 0).Select(i => i - 1).Sum();
-            var second = arr.MetaOperators().WhereMeta(i => i % 2 == 0).SelectMeta(i => i - 1).SumMeta();
+            var second = arr.MetaOperators().Where(i => i % 2 == 0).Select(i => i - 1).Sum();
             Assert.Equal(first, second);
+        }
+        
+        [Fact]
+        public void Statistic()
+        {
+            var flags = new StatisticFlags().Add(StatisticValue.Sum);
+            var first = arr.MetaOperators().GetStatistic(flags);
+            Assert.True(first.HasValue && 
+                        first.Value.Sum.HasValue && 
+                        first.Value.Average.HasValue &&
+                        !first.Value.Minus.HasValue &&
+                        !first.Value.Product.HasValue);
         }
     }
 }

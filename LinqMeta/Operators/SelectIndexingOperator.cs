@@ -32,8 +32,7 @@ namespace LinqMeta.Operators
                 {
                     if (_oldCollect.HasNext)
                     {
-                        _item = _selector.Invoke(new ZipPair<TOld>(_index, _oldCollect.Value));
-                        ++_index;
+                        _item = _selector.Invoke(new ZipPair<TOld>(_index++, _oldCollect.Value));
                         return true;
                     }
                     else
