@@ -1,16 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net461</TargetFramework>
+        <TargetFrameworks>net461;netstandard1.3;netcoreapp2.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\LinqMetaCore\LinqMetaCore.csproj" />
-      <ProjectReference Include="LinqMeta.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="DataTypes" />
     </ItemGroup>
 
 </Project>

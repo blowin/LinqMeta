@@ -1,7 +1,6 @@
 using System.Linq;
-using LinqMeta.DataTypes.Statistic;
+using LinqMeta.DataTypes;
 using LinqMeta.Extensions;
-using LinqMetaCore;
 using Xunit;
 
 namespace LinqMetaTest
@@ -119,8 +118,6 @@ namespace LinqMetaTest
         [Fact]
         public void Any()
         {
-            var eith = new Union<string, int>();
-            
             Assert.Equal(arr.Any(), arr.MetaOperators().Any());
             Assert.Equal(arr.Any(i => i == 11), arr.MetaOperators().Any(i => i == 11));
         }
@@ -146,15 +143,5 @@ namespace LinqMetaTest
             var metaLinqSum2 = arr.MetaOperators().ZipSelect(Enumerable.Repeat(5, 5).ToArray().GetMetaIter(), pair => pair.First + pair.Second).Sum();
         }
         */
-        [Fact]
-        public void Statistic()
-        {
-            var first = arr.MetaOperators().GetStatistic(StatisticValue.Sum | StatisticValue.Minus);
-            Assert.True(first.HasValue && 
-                        first.Value.Sum.HasValue && 
-                        first.Value.Average.HasValue &&
-                        first.Value.Minus.HasValue &&
-                        !first.Value.Product.HasValue);
-        }
     }
 }
