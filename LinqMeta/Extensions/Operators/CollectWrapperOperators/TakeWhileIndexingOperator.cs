@@ -1,9 +1,8 @@
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
 using LinqMeta.Functors;
 using LinqMeta.Operators;
-using LinqMeta.Operators.Numbers;
+using LinqMetaCore;
 
 namespace LinqMeta.Extensions.Operators.CollectWrapperOperators
 {

@@ -11,7 +11,7 @@ namespace LinqMeta.Operators
     {
         private TCollect _oldCollect;
 
-        private uint _index;
+        private int _index;
         private uint _skipCount;
         private T _item;
         
@@ -28,7 +28,7 @@ namespace LinqMeta.Operators
             {
                 if (_oldCollect.HasIndexOverhead)
                 {
-                    while (_index++ < _skipCount && _oldCollect.HasNext)
+                    while (++_index < _skipCount && _oldCollect.HasNext)
                     {
                     }
 
@@ -37,26 +37,19 @@ namespace LinqMeta.Operators
                         _item = _oldCollect.Value;
                         return true;
                     }
-                    else
-                    {
-                        _index = 0;
-                        return false;
-                    }
                 }
                 else
                 {
                     var size = _oldCollect.Size;
-                    if (_skipCount < size && _index < size)
+                    if (_skipCount < size && ++_index < size)
                     {
-                        _item = _oldCollect[_index++];
+                        _item = _oldCollect[(uint) _index];
                         return true;
                     }
-                    else
-                    {
-                        _index = 0;
-                        return false;
-                    }
                 }
+                
+                _index = -1;
+                return false;
             }
         }
 
@@ -71,7 +64,7 @@ namespace LinqMeta.Operators
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get 
             { 
-                return _oldCollect.HasIndexOverhead || index >= _oldCollect.Size - _skipCount ? 
+                return _oldCollect.HasIndexOverhead ? 
                     default(T) : 
                     _oldCollect[index + _skipCount]; 
             }
@@ -87,7 +80,7 @@ namespace LinqMeta.Operators
         {
             _oldCollect = oldCollect;
             _skipCount = skipCount;
-            _index = _oldCollect.HasIndexOverhead ? 0 : _skipCount;
+            _index = _oldCollect.HasIndexOverhead ? -1 : (int) _skipCount;
             _item = default(T);
         }
     }

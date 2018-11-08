@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace LinqMeta.Core
+namespace LinqMetaCore
 {
     [StructLayout(LayoutKind.Auto)]
     public struct Pair<T, T2> : 

@@ -33,11 +33,6 @@ namespace LinqMeta.Operators
                         _item = _oldCollect.Value;
                         return true;
                     }
-                    else
-                    {
-                        _index = -1;
-                        return false;
-                    }
                 }
                 else
                 {
@@ -46,12 +41,10 @@ namespace LinqMeta.Operators
                         _item = _oldCollect[(uint) _index];
                         return true;
                     }
-                    else
-                    {
-                        _index = -1;
-                        return false;
-                    }
                 }
+                
+                _index = -1;
+                return false;
             }
         }
 

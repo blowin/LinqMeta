@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LinqMeta.Core
+namespace LinqMetaCore
 {
     public static class ComparatorUtil<T>
     {

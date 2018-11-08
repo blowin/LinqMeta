@@ -1,5 +1,5 @@
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
+using LinqMetaCore;
 
 namespace LinqMeta.Extensions.Operators
 {
@@ -43,7 +43,7 @@ namespace LinqMeta.Extensions.Operators
             }
         }
         
-        public static Option<T> NthMeta<TCollect, T>(this TCollect collect, uint index)
+        public static LinqMetaCore.Option<T> NthMeta<TCollect, T>(this TCollect collect, uint index)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)

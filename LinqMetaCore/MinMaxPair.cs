@@ -1,4 +1,4 @@
-namespace LinqMeta.Core
+namespace LinqMetaCore
 {
     public struct MinMaxPair<T>
     {

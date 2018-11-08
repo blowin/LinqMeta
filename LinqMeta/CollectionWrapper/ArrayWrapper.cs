@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+
 namespace LinqMeta.CollectionWrapper
 {
     public struct ArrayWrapper<T> : 

@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
 using LinqMeta.Functors;
+using LinqMetaCore;
 
 namespace LinqMeta.Operators
 {
@@ -14,7 +14,7 @@ namespace LinqMeta.Operators
         private TCollect _collect;
         private TFilter _filter;
 
-        private uint _index;
+        private int _index;
         private T _item;
 
         public bool HasIndexOverhead
@@ -33,22 +33,22 @@ namespace LinqMeta.Operators
                     while (_collect.HasNext)
                     {
                         _item = _collect.Value;
-                        if (_filter.Invoke(new ZipPair<T>((int) _index++, _item)))
+                        if (_filter.Invoke(new ZipPair<T>(++_index, _item)))
                             return true;
                     }
                 }
                 else
                 {
                     var size = _collect.Size;
-                    while (_index < size)
+                    while (++_index < size)
                     {
-                        _item = _collect[_index];
-                        if (_filter.Invoke(new ZipPair<T>((int) _index++, _item)))
+                        _item = _collect[(uint) _index];
+                        if (_filter.Invoke(new ZipPair<T>( _index, _item)))
                             return true;
                     }
                 }
                 
-                _index = 0;
+                _index = -1;
                 return false;
             }
         }
@@ -76,7 +76,7 @@ namespace LinqMeta.Operators
             _collect = collect;
             _filter = filter;
 
-            _index = 0;
+            _index = -1;
             _item = default(T);
         }
     }

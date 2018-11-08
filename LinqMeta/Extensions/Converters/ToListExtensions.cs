@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
+using LinqMetaCore;
 
 namespace LinqMeta.Extensions.Converters
 {

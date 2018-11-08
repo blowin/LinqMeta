@@ -13,7 +13,7 @@ namespace LinqMeta.Operators
         private TCollect _collect;
         private TFilter _filter;
 
-        private uint _index;
+        private int _index;
         private T _item;
         
         public bool HasIndexOverhead
@@ -39,15 +39,14 @@ namespace LinqMeta.Operators
                 else
                 {
                     var sz = _collect.Size;
-                    while (_index < sz)
+                    while (++_index < sz)
                     {
-                        _item = _collect[_index];
-                        ++_index;
+                        _item = _collect[(uint) _index];
                         if (_filter.Invoke(_item))
                             return true;
                     }
 
-                    _index = 0;
+                    _index = -1;
                 }
 
                 return false;
@@ -77,7 +76,7 @@ namespace LinqMeta.Operators
             _collect = collect;
             _filter = filter;
 
-            _index = 0;
+            _index = -1;
             _item = default(T);
         }
     }

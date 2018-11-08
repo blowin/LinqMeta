@@ -36,22 +36,14 @@ namespace LinqMeta.Operators
                             return true;
                     }
                 }
-                else
+                else if (++_index < _oldCollect.Size)
                 {
-                    var size = _oldCollect.Size;
-                    if (_index < size)
-                    {
-                        _item = _oldCollect[(uint) _index];
-                        if (_filter.Invoke(_item))
-                        {
-                            ++_index;
-                            return true;
-                        }
-                        
-                        _index = 0;   
-                    }
+                    _item = _oldCollect[(uint) _index];
+                    if (_filter.Invoke(_item))
+                        return true;   
                 }
                 
+                _index = -1;
                 return false;
             }
         }
@@ -79,7 +71,7 @@ namespace LinqMeta.Operators
             _oldCollect = oldCollect;
             _filter = filter;
 
-            _index = 0;
+            _index = -1;
             _item = default(T);
         }
     }

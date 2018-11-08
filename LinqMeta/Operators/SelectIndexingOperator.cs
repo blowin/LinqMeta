@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
+using LinqMetaCore;
 using LinqMeta.Functors;
 
 namespace LinqMeta.Operators
@@ -32,29 +32,21 @@ namespace LinqMeta.Operators
                 {
                     if (_oldCollect.HasNext)
                     {
-                        _item = _selector.Invoke(new ZipPair<TOld>(_index++, _oldCollect.Value));
+                        _item = _selector.Invoke(new ZipPair<TOld>(++_index, _oldCollect.Value));
                         return true;
-                    }
-                    else
-                    {
-                        _index = 0;
-                        return false;
                     }
                 }
                 else
                 {
-                    if (_oldCollect.Size < _index)
+                    if (_oldCollect.Size < ++_index)
                     {
                         _item = _selector.Invoke(new ZipPair<TOld>(_index, _oldCollect[(uint) _index]));
-                        _index += 1;
                         return true;
                     }
-                    else
-                    {
-                        _index = 0;
-                        return false;
-                    }
                 }
+                
+                _index = -1;
+                return false;
             }
         }
 
@@ -86,7 +78,7 @@ namespace LinqMeta.Operators
             _oldCollect = oldCollect;
             _selector = selector;
 
-            _index = 0;
+            _index = -1;
             _item = default(TNew);
         }
     }

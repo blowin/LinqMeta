@@ -1,4 +1,4 @@
-using LinqMeta.Core;
+using LinqMetaCore;
 
 namespace LinqMeta.Operators.IOperator
 {

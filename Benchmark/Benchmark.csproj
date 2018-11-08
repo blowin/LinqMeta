@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BenchmarkDotNet, Version=0.11.2.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4">
@@ -199,6 +201,10 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LinqMetaCore\LinqMetaCore.csproj">
+      <Project>{3808c515-c532-4d4c-9737-010a43dde151}</Project>
+      <Name>LinqMetaCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LinqMeta\LinqMeta.csproj">
       <Project>{36838530-9c85-4a7f-a92e-a239dea30faa}</Project>
       <Name>LinqMeta</Name>

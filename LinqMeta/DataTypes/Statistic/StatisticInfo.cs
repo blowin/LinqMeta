@@ -1,7 +1,8 @@
 using System.Runtime.InteropServices;
 using LinqMeta.Operators.Numbers;
+using LinqMetaCore;
 
-namespace LinqMeta.Core.Statistic
+namespace LinqMeta.DataTypes.Statistic
 {
     [StructLayout(LayoutKind.Auto)]
     public struct StatisticInfo<T>

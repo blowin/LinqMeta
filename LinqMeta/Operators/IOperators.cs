@@ -24,6 +24,7 @@ namespace LinqMeta.Operators
         ITake<TCollect, T>,
         ITakeWhile<TCollect, T>,
         ITakeWhileIndex<TCollect, T>,
+        IZip<TCollect, T>,
 
         IToArray<T>,
         IToList<T> 

@@ -1,12 +1,11 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using LinqMeta.CollectionWrapper;
 
-namespace LinqMeta.Core
+namespace LinqMetaCore
 {
     [StructLayout(LayoutKind.Auto)]
-    internal struct ArrayBuffer<T>
+    public struct ArrayBuffer<T>
     {
         private T[] _buff;
         private uint _size;

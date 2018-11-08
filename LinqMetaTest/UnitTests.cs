@@ -1,12 +1,7 @@
-using System;
 using System.Linq;
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Core.Statistic;
+using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Extensions;
-using LinqMeta.Extensions.Converters;
-using LinqMeta.Extensions.Operators;
-using LinqMeta.Functors;
-using LinqMeta.Operators;
+using LinqMetaCore;
 using Xunit;
 
 namespace LinqMetaTest
@@ -124,19 +119,41 @@ namespace LinqMetaTest
         [Fact]
         public void Any()
         {
+            var eith = new Union<string, int>();
+            
             Assert.Equal(arr.Any(), arr.MetaOperators().Any());
             Assert.Equal(arr.Any(i => i == 11), arr.MetaOperators().Any(i => i == 11));
         }
         
+        /*
+         var metaVarUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
+                .Take(5);
+            
+            CollectWrapper<TakeOperator<WhereOperator<SelectIndexingOperator<ArrayWrapper<int>, FuncFunctor<ZipPair<int>, int>, int, int>, FuncFunctor<int, bool>, int>, int>, int> metaFullTypeUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
+                .Take(5);
+         */
+     /*   
+        [Fact]
+        public void Zip()
+        {
+            var linqSum = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
+            var metaLinqSum = arr.MetaOperators().Zip<ArrayWrapper<int>, int>(Enumerable.Repeat(5, 5).ToArray().GetMetaIter())
+                .Select(pair => pair.First + pair.Second).Sum();
+            
+            Assert.Equal(linqSum, metaLinqSum);
+
+            var linqSum2 = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
+            var metaLinqSum2 = arr.MetaOperators().ZipSelect(Enumerable.Repeat(5, 5).ToArray().GetMetaIter(), pair => pair.First + pair.Second).Sum();
+        }
+        */
         [Fact]
         public void Statistic()
         {
-            var flags = new StatisticFlags().Add(StatisticValue.Sum);
-            var first = arr.MetaOperators().GetStatistic(flags);
+            var first = arr.MetaOperators().GetStatistic(StatisticValue.Sum | StatisticValue.Minus);
             Assert.True(first.HasValue && 
                         first.Value.Sum.HasValue && 
                         first.Value.Average.HasValue &&
-                        !first.Value.Minus.HasValue &&
+                        first.Value.Minus.HasValue &&
                         !first.Value.Product.HasValue);
         }
     }

@@ -1,5 +1,5 @@
 using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
+using LinqMetaCore;
 
 namespace LinqMeta.Extensions.Converters
 {
@@ -14,7 +14,8 @@ namespace LinqMeta.Extensions.Converters
                 while (collect.HasNext)
                     buff.Add(collect.Value);
 
-                return buff.ToArray();
+                var arr = buff.ToArray();
+                return arr;
             }
             else
             {

@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using Void = LinqMeta.Core.Void;
 
 namespace LinqMeta.Functors
 {
@@ -17,10 +16,10 @@ namespace LinqMeta.Functors
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Void Invoke(T param)
+        public LinqMetaCore.Void Invoke(T param)
         {
             _functor(param);
-            return new Void();
+            return new LinqMetaCore.Void();
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

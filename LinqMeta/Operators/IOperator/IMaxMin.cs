@@ -1,6 +1,6 @@
 using System;
-using LinqMeta.Core;
 using LinqMeta.Functors;
+using LinqMetaCore;
 
 namespace LinqMeta.Operators.IOperator
 {

@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using BenchmarkDotNet.Running;
-using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
-using JM.LinqFaster;
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Core;
-using LinqMeta.Extensions;
-using LinqMeta.Extensions.Converters;
-using LinqMeta.Extensions.Operators;
 using LinqMeta.Functors;
-using LinqMeta.Operators.Numbers;
+using LinqMetaCore;
 
 namespace Benchmark
 {
@@ -130,7 +123,27 @@ namespace Benchmark
         public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).TakeF(2000).SumF();
 
         #endregion
-  */      
+  */
+        [Benchmark]
+        public IntPtr NewOperator()
+        {
+            var arr = new int[N];
+            unsafe
+            {
+                fixed (int* p = arr)
+                {
+                    return (IntPtr) p;
+                }
+            }
+        }
+
+        [Benchmark]
+        public IntPtr AllocOperator()
+        {
+            var arr = Marshal.AllocHGlobal(sizeof(int) * N);
+            Marshal.FreeHGlobal(arr);
+            return arr;
+        }
     }
     
     public class Program

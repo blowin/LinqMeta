@@ -1,6 +1,6 @@
 using System;
 
-namespace LinqMeta.Core
+namespace LinqMetaCore
 {
     public struct Void : 
         IEquatable<Void>, 
