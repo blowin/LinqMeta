@@ -1,5 +1,5 @@
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Operators.Numbers;
+using LinqMeta.Operators.Number;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {

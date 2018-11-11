@@ -2,7 +2,9 @@ using System;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
-using LinqMeta.Operators.Numbers;
+using LinqMeta.Functors.Math;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {

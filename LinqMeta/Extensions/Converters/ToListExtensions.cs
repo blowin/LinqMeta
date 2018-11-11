@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
 using LinqMetaCore;
+using LinqMetaCore.Buffers;
+using LinqMetaCore.Intefaces;
+using LinqMetaCore.Utils;
 
 namespace LinqMeta.Extensions.Converters
 {
@@ -11,7 +14,7 @@ namespace LinqMeta.Extensions.Converters
         {
             if (collect.HasIndexOverhead)
             {
-                var buff = new List<T>((int)capacity.GetValueOrDefault(16));
+                var buff = new List<T>((int)capacity.GetValueOrDefault(ArrayBuffer<T>.DefaultCapacity));
                 while (collect.HasNext)
                     buff.Add(collect.Value);
 

@@ -1,5 +1,7 @@
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {

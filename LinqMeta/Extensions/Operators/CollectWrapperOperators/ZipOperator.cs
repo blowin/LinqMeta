@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Operators;
+using LinqMeta.Operators.CollectOperator;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators.CollectWrapperOperators
 {

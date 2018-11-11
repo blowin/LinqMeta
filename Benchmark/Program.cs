@@ -7,6 +7,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using LinqMeta.Functors;
 using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace Benchmark
 {

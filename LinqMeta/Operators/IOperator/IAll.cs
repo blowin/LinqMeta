@@ -1,5 +1,7 @@
 using System;
 using LinqMeta.Functors;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.IOperator
 {

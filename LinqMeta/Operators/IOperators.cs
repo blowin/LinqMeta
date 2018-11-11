@@ -1,5 +1,5 @@
-using LinqMeta.CollectionWrapper;
 using LinqMeta.Operators.IOperator;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators
 {
@@ -16,7 +16,10 @@ namespace LinqMeta.Operators
         IMaxMin<T>,
         IAny<T>,
         IAll<T>,
-
+        
+        ICast<TCollect, T>,
+        IUnsafeCast<TCollect, T>,
+        ITypeOf<TCollect, T>,
         ISelect<TCollect, T>,
         ISelectIndex<TCollect, T>,
         IWhere<TCollect, T>,
@@ -25,6 +28,7 @@ namespace LinqMeta.Operators
         ITakeWhile<TCollect, T>,
         ITakeWhileIndex<TCollect, T>,
         IZip<TCollect, T>,
+        IConcat<TCollect, T>,
 
         IToArray<T>,
         IToList<T> 

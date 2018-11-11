@@ -1,4 +1,7 @@
 using LinqMeta.CollectionWrapper;
+using LinqMeta.Operators.CollectOperator;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.IOperator
 {

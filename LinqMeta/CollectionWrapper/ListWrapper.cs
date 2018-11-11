@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
+using LinqMetaCore.Utils;
 
 namespace LinqMeta.CollectionWrapper
 {

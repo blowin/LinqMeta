@@ -1,6 +1,9 @@
 using System;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
+using LinqMeta.Operators.CollectOperator;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.IOperator
 {

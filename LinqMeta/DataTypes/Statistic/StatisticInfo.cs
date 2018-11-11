@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
-using LinqMeta.Operators.Numbers;
+using LinqMeta.Operators;
+using LinqMeta.Operators.Number;
 using LinqMetaCore;
 
 namespace LinqMeta.DataTypes.Statistic

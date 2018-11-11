@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
+using LinqMetaCore;
+using LinqMetaCore.Intefaces;
+using LinqMetaCore.Utils;
 
 namespace LinqMeta.Extensions
 {
@@ -19,6 +22,17 @@ namespace LinqMeta.Extensions
         public static OperatorWrapper<ListWrapper<T>, T> MetaOperators<T>(this List<T> collect)
         {
             return new OperatorWrapper<ListWrapper<T>, T>(new ListWrapper<T>(collect));
+        }
+        
+        public static OperatorWrapper<EnumeratorWrapper<T>, T> MetaOperators<T>(this IEnumerator<T> collect)
+        {
+            return new OperatorWrapper<EnumeratorWrapper<T>, T>(new EnumeratorWrapper<T>(collect));
+        }
+        
+        public static OperatorWrapper<EnumeratorWrapper<T>, T> MetaOperators<T>(this IEnumerable<T> enumerable)
+        {
+            ErrorUtil.NullCheck(enumerable, "enumerable");
+            return new OperatorWrapper<EnumeratorWrapper<T>, T>(new EnumeratorWrapper<T>(enumerable.GetEnumerator()));
         }
     }
 }

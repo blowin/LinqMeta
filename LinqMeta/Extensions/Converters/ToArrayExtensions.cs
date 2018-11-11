@@ -1,5 +1,8 @@
 using LinqMeta.CollectionWrapper;
 using LinqMetaCore;
+using LinqMetaCore.Buffers;
+using LinqMetaCore.Intefaces;
+using LinqMetaCore.Utils;
 
 namespace LinqMeta.Extensions.Converters
 {

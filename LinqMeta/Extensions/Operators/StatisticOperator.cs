@@ -1,7 +1,7 @@
-using LinqMeta.CollectionWrapper;
 using LinqMeta.DataTypes.Statistic;
+using LinqMeta.Operators.Number;
 using LinqMetaCore;
-using LinqMeta.Operators.Numbers;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {

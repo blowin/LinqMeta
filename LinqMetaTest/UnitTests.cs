@@ -1,6 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using LinqMeta.DataTypes;
 using LinqMeta.Extensions;
+using LinqMeta.Extensions.Operators;
 using Xunit;
 
 namespace LinqMetaTest
@@ -8,6 +14,13 @@ namespace LinqMetaTest
     public class UnitTest1
     {
         private int[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, -2, -3};
+        private Stack<int> stack = new Stack<int>(Enumerable.Range(0, 10));
+        private Dictionary<int, string> _dictionary = Enumerable
+            .Repeat("Dima", 10)
+            .Select((s, i) => new {Key = i, Name = s + i})
+            .ToDictionary(arg => arg.Key, arg => arg.Name);
+        
+        private object[] heterogeneousArray = {"Test", 12, "Home", "Hello", 2.222, 12u, new object(), new Random(), };
         
         [Fact]
         public void Sum()
@@ -120,6 +133,36 @@ namespace LinqMetaTest
         {
             Assert.Equal(arr.Any(), arr.MetaOperators().Any());
             Assert.Equal(arr.Any(i => i == 11), arr.MetaOperators().Any(i => i == 11));
+        }
+
+        [Fact]
+        public void TypeOf()
+        {
+            var linq = heterogeneousArray.OfType<string>()
+                .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s)).ToString();
+
+            var metaLinq = heterogeneousArray.MetaOperators().OfType<string>()
+                .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s)).ToString();
+            
+            Assert.Equal(linq, metaLinq);
+        }
+
+        [Fact]
+        public void SumStack()
+        {
+            var linq = stack.Sum();
+            var linqMeta = stack.MetaOperators().Sum();
+
+            Assert.Equal(linq, linqMeta);
+        }
+        
+        [Fact]
+        public void ConcatSum()
+        {
+            var linq = stack.Concat(arr).Sum();
+            var linqMeta = stack.MetaOperators().Concat(arr.MetaWrapper()).Sum();
+
+            Assert.Equal(linq, linqMeta);
         }
         
         /*

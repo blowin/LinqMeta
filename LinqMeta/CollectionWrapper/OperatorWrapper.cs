@@ -7,7 +7,10 @@ using LinqMeta.Extensions.Operators;
 using LinqMeta.Extensions.Operators.CollectWrapperOperators;
 using LinqMeta.Functors;
 using LinqMeta.Operators;
+using LinqMeta.Operators.Cast;
+using LinqMeta.Operators.CollectOperator;
 using LinqMetaCore;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.CollectionWrapper
 {
@@ -16,6 +19,11 @@ namespace LinqMeta.CollectionWrapper
         where TCollect : struct, ICollectionWrapper<T>
     {
         private TCollect _collect;
+
+        public TCollect Collect
+        {
+            get { return _collect; }
+        }
         
         public OperatorWrapper(TCollect collect)
         {
@@ -174,6 +182,32 @@ namespace LinqMeta.CollectionWrapper
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SelectOperator<TCollect, CastOperator<T, TNew>, T, TNew>, TNew> Cast<TNew>() 
+            where TNew : T
+        {
+            return Select<CastOperator<T, TNew>, TNew>(default(CastOperator<T, TNew>));
+        }
+        
+        public OperatorWrapper<SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>, TNew> UnsafeCast<TNew>()
+        {
+            return new OperatorWrapper<SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>, TNew>(
+                new SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>(_collect, default(UnsafeCast<T, TNew>))
+            );
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>, TNew> OfType<TNew>() 
+            where TNew : class
+        {
+            return new OperatorWrapper<WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>, TNew>(
+                    new WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>(
+                            new SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>(_collect, default(TypeOfOperator<T, TNew>)), 
+                            default(NotNullOperator<TNew>)
+                        )
+                );
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectOperator<TCollect, TSelector, T, TNew>, TNew> Select<TSelector, TNew>(TSelector selector) 
             where TSelector : struct, IFunctor<T, TNew>
         {
@@ -279,6 +313,12 @@ namespace LinqMeta.CollectionWrapper
             return ZipSelect<TOtherCollect, FuncFunctor<Pair<T, T2>, T2>, T2>(collect2, new FuncFunctor<Pair<T, T2>, T2>(select));
         }
 
+        public OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T> Concat<TOther>(TOther other) 
+            where TOther : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T>(_collect.ConcatMeta<TCollect, TOther, T>(other));
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray(uint? capacity)
         {
