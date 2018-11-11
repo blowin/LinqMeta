@@ -1,4 +1,5 @@
 using LinqMeta.Operators.IOperator;
+using LinqMeta.Operators.IOperator.Take;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators
