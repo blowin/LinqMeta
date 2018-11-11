@@ -18,6 +18,11 @@ namespace LinqMeta.Extensions
             return new ListWrapper<T>(collect);
         }
         
+        public static ListInterfaceWrapper<T> MetaWrapper<T>(this IList<T> collect)
+        {
+            return new ListInterfaceWrapper<T>(collect);
+        }
+        
         public static EnumeratorWrapper<T> MetaWrapper<T>(this IEnumerator<T> collect)
         {
             return new EnumeratorWrapper<T>(collect);
