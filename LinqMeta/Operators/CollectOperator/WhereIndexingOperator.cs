@@ -27,6 +27,7 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
+                var oldItem = _item;
                 if (_collect.HasIndexOverhead)
                 {
                     while (_collect.HasNext)
@@ -42,12 +43,14 @@ namespace LinqMeta.Operators.CollectOperator
                     while (++_index < size)
                     {
                         _item = _collect[(uint) _index];
-                        if (_filter.Invoke(new ZipPair<T>( _index, _item)))
+                        if (_filter.Invoke(new ZipPair<T>(_index, _item)))
                             return true;
+                        
                     }
                 }
                 
                 _index = -1;
+                _item = oldItem;
                 return false;
             }
         }

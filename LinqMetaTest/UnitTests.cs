@@ -165,6 +165,15 @@ namespace LinqMetaTest
             Assert.Equal(linq, linqMeta);
         }
         
+        [Fact]
+        public void LastWhere()
+        {
+            var linq = arr.Last(i => i % 2 == 0);
+            var linqMeta = arr.MetaOperators().Last(i => i % 2 == 0);
+
+            Assert.Equal(linq, linqMeta.GetValueOrDefault());
+        }
+        
         /*
          var metaVarUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
                 .Take(5);

@@ -26,6 +26,7 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
+                var oldItem = _item;
                 if (_oldCollect.HasIndexOverhead)
                 {
                     if (_oldCollect.HasNext)
@@ -41,7 +42,8 @@ namespace LinqMeta.Operators.CollectOperator
                     if (_filter.Invoke(_item))
                         return true;   
                 }
-                
+
+                _item = oldItem;
                 _index = -1;
                 return false;
             }

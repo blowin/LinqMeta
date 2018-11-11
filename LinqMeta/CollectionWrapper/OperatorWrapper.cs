@@ -126,9 +126,35 @@ namespace LinqMeta.CollectionWrapper
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Option<T> First<TFilter>(TFilter predicat) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return _collect.WhereMeta<TCollect, TFilter, T>(predicat).FirstMeta<WhereOperator<TCollect, TFilter, T>, T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Option<T> First(Func<T, bool> predicat)
+        {
+            return _collect.WhereMeta<TCollect, T>(predicat).FirstMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last()
         {
             return _collect.LastMeta<TCollect, T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Option<T> Last<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return _collect.WhereMeta<TCollect, TFilter, T>(filter).LastMeta<WhereOperator<TCollect, TFilter, T>, T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Option<T> Last(Func<T, bool> filter)
+        {
+            return _collect.WhereMeta<TCollect, T>(filter).LastMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -289,6 +315,12 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T> TakeWhileIndex(Func<ZipPair<T>, bool> filter)
         {
             return new OperatorWrapper<TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T>(_collect.TakeWhileIndexMeta<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(new FuncFunctor<ZipPair<T>, bool>(filter)));
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SkipOperator<TCollect, T>, T> Skip(uint count)
+        {
+            return new OperatorWrapper<SkipOperator<TCollect, T>, T>(_collect.SkipMeta<TCollect, T>(count));
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

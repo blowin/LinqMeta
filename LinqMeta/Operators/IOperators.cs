@@ -25,6 +25,7 @@ namespace LinqMeta.Operators
         IWhere<TCollect, T>,
         IWhereIndex<TCollect, T>,
         ITake<TCollect, T>,
+        ISkip<TCollect, T>,
         ITakeWhile<TCollect, T>,
         ITakeWhileIndex<TCollect, T>,
         IZip<TCollect, T>,
