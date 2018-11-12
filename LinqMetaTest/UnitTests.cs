@@ -181,9 +181,23 @@ namespace LinqMetaTest
             var linqMeta = arr.MetaOperators().SkipWhile(i => i < 6).Sum();
 
             Assert.Equal(linq, linqMeta);
+        }
 
-            linq = arr.Skip(3).Sum();
-            linqMeta = arr.MetaOperators().Skip(3).Sum();
+        [Fact]
+        public void SkipWhile()
+        {
+            var linq = arr.Skip(3).Sum();
+            var linqMeta = arr.MetaOperators().Skip(3).Sum();
+            Assert.Equal(linq, linqMeta);
+        }
+
+        [Fact]
+        public void SkipWhileIndex()
+        {
+            var linq = arr.SkipWhile((i, i1) => i1 < 4).Sum();
+
+            var linqMeta = arr.MetaOperators().SkipWhileIndex(pair => pair.Index < 4).Sum();
+            
             Assert.Equal(linq, linqMeta);
         }
         

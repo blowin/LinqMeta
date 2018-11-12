@@ -32,7 +32,7 @@ namespace LinqMetaCore
 
         public override string ToString()
         {
-            return string.Concat(Index, ",", Item);
+            return string.Concat("ZipPair(Index: ", Index, " - Item: ", Item, ")");
         }
 
         bool IEquatable<ZipPair<T>>.Equals(ZipPair<T> other)

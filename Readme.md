@@ -28,3 +28,57 @@ SelectWhereIndexTakeSumLinq |    43.24 us |  0.4492 us |  0.4202 us |      0.061
 SelectWhereIndexTakeSumLinqMeta |    23.51 us |  0.2081 us |  0.1946 us |           - |           - |           - |                   - |
 SelectWhereIndexTakeSumStructFunctorLinqMeta |    17.50 us |  0.0933 us |  0.0872 us |           - |           - |           - |                   - |
 SelectWhereIndexTakeSumLinqFaster |   914.04 us |  4.9388 us |  4.6198 us |    350.5859 |    300.7813 |    293.9453 |           1344552 B |
+
+#### Implement methods:
+
+Operation, like XXXDefault may replace. because XXX operators return special type Option, then may return default, value or exception
+
+| Method          | Linq | LinqMeta |
+|-----------------|------|----------|
+| Select          | +    | +        |
+| SelectMany      | +    | -        |
+| Where      | +    | +        |
+| GroupJoin      | +    | -        |
+| Join      | +    | -        |
+| All      | +    | +        |
+| Any      | +    | +        |
+| Contains      | +    | -        |
+| Concat      | +    | +        |
+| DefaultIfEmpty      | +    | -        |
+| Distinct      | +    | -        |
+| Except      | +    | -        |
+| Intersect      | +    | -        |
+| Union      | +    | -        |
+| OrderBy      | +    | -        |
+| OrderByDescending	     | +    | -        |
+| ThenBy      | +    | -        |
+| ThenByDescending      | +    | -        |
+| Reverse     | +    | -        |
+| GroupBy      | +    | -        |
+| Aggregate	      | +    | +        |
+| Max	      | +    | +        |
+| Min	      | +    | +        |
+| Sum	      | +    | +        |
+| MaxMin	      | -    | +        |
+| Cast	      | +    | +        |
+| OfType	      | +    | +        |
+| UnsafeCast	      | -    | +        |
+| Average      | +    | -        |
+| Count      | +    | -        |
+| LongCount	      | +    | -        |
+| Statistic      | -    | +        |
+| ElementAt      | +    | +       |
+| ElementAtOrDefault	      | +    | -        |
+| First      | +    | +        |
+| FirstOrDefault      | +    | -        |
+| Last      | +    | -        |
+| LastOrDefault      | +    | -        |
+| Skip      | +    | +        |
+| SkipWhile      | +    | +        |
+| Take      | +    | +        |
+| TakeWhile      | +    | +        |
+| Zip      | +    | +        |
+| ToArray      | +    | +        |
+| ToList      | +    | +        |
+| ToDictionary      | +    | -        |
+| ToHashSet      | +    | -        |

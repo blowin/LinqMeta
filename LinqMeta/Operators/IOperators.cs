@@ -34,11 +34,14 @@ namespace LinqMeta.Operators
         ITakeWhileIndex<TCollect, T>,
         ISkip<TCollect, T>,
         ISkipWhile<TCollect, T>,
+        ISkipWhileIndex<TCollect, T>,
         IZip<TCollect, T>,
         IConcat<TCollect, T>,
 
         IToArray<T>,
-        IToList<T> 
+        IToList<T>,
+        
+        IBuildEnumerator<TCollect, T>
         
         where TCollect : struct, ICollectionWrapper<T>
     {

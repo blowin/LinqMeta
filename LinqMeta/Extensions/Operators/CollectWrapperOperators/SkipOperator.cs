@@ -25,5 +25,14 @@ namespace LinqMeta.Extensions.Operators.CollectWrapperOperators
         {
             return new SkipWhileOperator<TCollect, TFilter, T>(collect, filter);
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static SkipWhileIndexingOperator<TCollect, TFilter, T> SkipWhileIndexMeta<TCollect, TFilter, T>(
+            this TCollect collect, TFilter filter) 
+            where TCollect : struct, ICollectionWrapper<T> 
+            where TFilter : struct, IFunctor<ZipPair<T>, bool>
+        {
+            return new SkipWhileIndexingOperator<TCollect, TFilter, T>(collect, filter);
+        }
     }
 }

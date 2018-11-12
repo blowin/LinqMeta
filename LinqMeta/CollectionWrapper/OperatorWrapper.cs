@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using LinqMeta.CollectionWrapper.EnumeratorWrapper;
 using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Extensions.Converters;
 using LinqMeta.Extensions.Operators;
@@ -337,6 +338,19 @@ namespace LinqMeta.CollectionWrapper
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SkipWhileIndexingOperator<TCollect, TFilter, T>, T> SkipWhileIndex<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<ZipPair<T>, bool>
+        {
+            return new OperatorWrapper<SkipWhileIndexingOperator<TCollect, TFilter, T>, T>(_collect.SkipWhileIndexMeta<TCollect, TFilter, T>(filter));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T> SkipWhileIndex(Func<ZipPair<T>, bool> filter)
+        {
+            return new OperatorWrapper<SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T>(_collect.SkipWhileIndexMeta<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(new FuncFunctor<ZipPair<T>, bool>(filter)));
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<ZipOperator<TCollect, T, TOtherCollect, T2>, Pair<T, T2>> Zip<TOtherCollect, T2>(TOtherCollect collect2) 
             where TOtherCollect : struct, ICollectionWrapper<T2>
         {
@@ -362,6 +376,18 @@ namespace LinqMeta.CollectionWrapper
             where TOther : struct, ICollectionWrapper<T>
         {
             return new OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T>(_collect.ConcatMeta<TCollect, TOther, T>(other));
+        }
+        
+        public CollectEnumeratorWrapper<TCollect, T> BuildEnumerator()
+        {
+            return new CollectEnumeratorWrapper<TCollect, T>(_collect);
+        }
+
+        public IEnumerator<T> BuildBoxEnumerator()
+        {
+            return _collect.HasIndexOverhead
+                ? (IEnumerator<T>) new CollectOverheadEnumeratorWrapper<TCollect, T>(_collect)
+                : new CollectIndexEnumeratorWrapper<TCollect, T>(_collect);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
