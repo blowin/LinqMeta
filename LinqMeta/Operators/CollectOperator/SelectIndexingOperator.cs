@@ -27,21 +27,10 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (_oldCollect.HasIndexOverhead)
+                if (_oldCollect.HasNext)
                 {
-                    if (_oldCollect.HasNext)
-                    {
-                        _item = _selector.Invoke(new ZipPair<TOld>(++_index, _oldCollect.Value));
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (_oldCollect.Size < ++_index)
-                    {
-                        _item = _selector.Invoke(new ZipPair<TOld>(_index, _oldCollect[(uint) _index]));
-                        return true;
-                    }
+                    _item = _selector.Invoke(new ZipPair<TOld>(++_index, _oldCollect.Value));
+                    return true;
                 }
                 
                 _index = -1;
@@ -64,7 +53,7 @@ namespace LinqMeta.Operators.CollectOperator
         public int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _oldCollect.HasIndexOverhead ? 0 : _oldCollect.Size; }
+            get { return _oldCollect.Size; }
         }
 
         public SelectIndexingOperator(TOldCollect oldCollect, TSelector selector)

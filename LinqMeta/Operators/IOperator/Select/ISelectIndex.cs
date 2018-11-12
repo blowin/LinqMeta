@@ -5,7 +5,7 @@ using LinqMeta.Operators.CollectOperator;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.Select
 {
     public interface ISelectIndex<TCollect, T>
         where TCollect : struct, ICollectionWrapper<T>

@@ -1,5 +1,9 @@
 using LinqMeta.Operators.IOperator;
+using LinqMeta.Operators.IOperator.Cast;
+using LinqMeta.Operators.IOperator.Skip;
 using LinqMeta.Operators.IOperator.Take;
+using LinqMeta.Operators.IOperator.Select;
+using LinqMeta.Operators.IOperator.ConvertToCollect;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators
@@ -26,9 +30,10 @@ namespace LinqMeta.Operators
         IWhere<TCollect, T>,
         IWhereIndex<TCollect, T>,
         ITake<TCollect, T>,
-        ISkip<TCollect, T>,
         ITakeWhile<TCollect, T>,
         ITakeWhileIndex<TCollect, T>,
+        ISkip<TCollect, T>,
+        ISkipWhile<TCollect, T>,
         IZip<TCollect, T>,
         IConcat<TCollect, T>,
 

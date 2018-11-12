@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.CollectOperator
+namespace LinqMeta.Operators.Cast
 {
     public struct TypeOfOperator<TOld, TNew> : IFunctor<TOld, TNew> 
         where TNew : class

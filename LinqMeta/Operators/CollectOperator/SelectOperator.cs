@@ -12,7 +12,6 @@ namespace LinqMeta.Operators.CollectOperator
         private TOldCollect _oldCollect;
         private TSelector _selector;
 
-        private int _index;
         private TNew _item;
         
         public bool HasIndexOverhead
@@ -26,30 +25,14 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (_oldCollect.HasIndexOverhead)
+                if(_oldCollect.HasNext)
                 {
-                    if(_oldCollect.HasNext)
-                    {
-                        _item = _selector.Invoke(_oldCollect.Value);
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    _item = _selector.Invoke(_oldCollect.Value);
+                    return true;
                 }
                 else
                 {
-                    if (_oldCollect.Size < ++_index)
-                    {
-                        _item = _selector.Invoke(_oldCollect[(uint) _index]);
-                        return true;
-                    }
-                    else
-                    {
-                        _index = -1;
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -77,7 +60,6 @@ namespace LinqMeta.Operators.CollectOperator
             _oldCollect = oldCollect;
             _selector = selector;
 
-            _index = -1;
             _item = default(TNew);
         }
     }

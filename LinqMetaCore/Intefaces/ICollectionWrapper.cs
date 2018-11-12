@@ -1,5 +1,6 @@
 namespace LinqMetaCore.Intefaces
 {
+    // TODO add check policy
     public interface ICollectionWrapper<T>
     {
         bool HasIndexOverhead { get; }

@@ -3,7 +3,7 @@ using LinqMeta.Operators.Cast;
 using LinqMeta.Operators.CollectOperator;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.Cast
 {
     public interface ICast<TCollect, TOld>
         where TCollect : struct, ICollectionWrapper<TOld>

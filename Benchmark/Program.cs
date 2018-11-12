@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BenchmarkDotNet.Running;
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using JM.LinqFaster;
+using LinqMeta.Extensions;
 using LinqMeta.Functors;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
@@ -89,24 +92,24 @@ namespace Benchmark
 
         #endregion
  */
-  /*      
+       
         #region SelectWhereSum
 
         [Benchmark]
         public long SelectWhereSumLinq() => _list.Select(i => (long)i).Where(l => l % 2 == 0).Sum();
         
         [Benchmark]
-        public long SelectWhereSumLinqMeta() => _list.MetaOperators().SelectMeta(i => (long)i).WhereMeta(i => i % 2 == 0).SumMeta();
+        public long SelectWhereSumLinqMeta() => _list.MetaOperators().Select(i => (long)i).Where(i => i % 2 == 0).Sum();
         
         [Benchmark]
-        public long SelectWhereSumStructFunctorLinqMeta() => _list.MetaOperators().SelectMeta<IntToLong, long>(default(IntToLong))
-            .WhereMeta(default(EvenFilter)).SumMeta();
+        public long SelectWhereSumStructFunctorLinqMeta() => _list.MetaOperators().Select<IntToLong, long>(default(IntToLong))
+            .Where(default(EvenFilter)).Sum();
         
         [Benchmark]
         public long SelectWhereSumLinqFaster() => _list.SelectF(i => (long)i).WhereSumF(l => l % 2 == 0);
 
         #endregion
-  */
+  
   /*      
         #region SelectSum
 
@@ -125,26 +128,6 @@ namespace Benchmark
 
         #endregion
   */
-        [Benchmark]
-        public IntPtr NewOperator()
-        {
-            var arr = new int[N];
-            unsafe
-            {
-                fixed (int* p = arr)
-                {
-                    return (IntPtr) p;
-                }
-            }
-        }
-
-        [Benchmark]
-        public IntPtr AllocOperator()
-        {
-            var arr = Marshal.AllocHGlobal(sizeof(int) * N);
-            Marshal.FreeHGlobal(arr);
-            return arr;
-        }
     }
     
     public class Program

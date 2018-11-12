@@ -1,4 +1,4 @@
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.ConvertToCollect
 {
     public interface IToArray<T>
     {

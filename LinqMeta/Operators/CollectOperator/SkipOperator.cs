@@ -26,29 +26,16 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (_oldCollect.HasIndexOverhead)
+                while (++_index < _skipCount && _oldCollect.HasNext)
                 {
-                    while (++_index < _skipCount && _oldCollect.HasNext)
-                    {
-                    }
-
-                    if (_oldCollect.HasNext)
-                    {
-                        _item = _oldCollect.Value;
-                        return true;
-                    }
                 }
-                else
+
+                if (_oldCollect.HasNext)
                 {
-                    var size = _oldCollect.Size;
-                    if (_skipCount < size && ++_index < size)
-                    {
-                        _item = _oldCollect[(uint) _index];
-                        return true;
-                    }
+                    _item = _oldCollect.Value;
+                    return true;
                 }
                 
-                _index = -1;
                 return false;
             }
         }
@@ -68,7 +55,13 @@ namespace LinqMeta.Operators.CollectOperator
         public int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return (int)Math.Min(_oldCollect.Size, _skipCount); }
+            get
+            {
+                var collectSize = _oldCollect.Size;
+                if (collectSize > _skipCount)
+                    return (int) (collectSize - _skipCount);
+                return 0;
+            }
         }
 
         public SkipOperator(TCollect oldCollect, uint skipCount)

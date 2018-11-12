@@ -174,6 +174,19 @@ namespace LinqMetaTest
             Assert.Equal(linq, linqMeta.GetValueOrDefault());
         }
         
+        [Fact]
+        public void Skip()
+        {
+            var linq = arr.SkipWhile(i => i < 6).Sum();
+            var linqMeta = arr.MetaOperators().SkipWhile(i => i < 6).Sum();
+
+            Assert.Equal(linq, linqMeta);
+
+            linq = arr.Skip(3).Sum();
+            linqMeta = arr.MetaOperators().Skip(3).Sum();
+            Assert.Equal(linq, linqMeta);
+        }
+        
         /*
          var metaVarUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
                 .Take(5);

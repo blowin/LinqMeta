@@ -324,6 +324,19 @@ namespace LinqMeta.CollectionWrapper
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SkipWhileOperator<TCollect, TFilter, T>, T> SkipWhile<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return new OperatorWrapper<SkipWhileOperator<TCollect, TFilter, T>, T>(_collect.SkipWhileMeta<TCollect, TFilter, T>(filter));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>, T> SkipWhile(Func<T, bool> filter)
+        {
+            return new OperatorWrapper<SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>, T>(_collect.SkipWhileMeta<TCollect, FuncFunctor<T, bool>, T>(new FuncFunctor<T, bool>(filter)));
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<ZipOperator<TCollect, T, TOtherCollect, T2>, Pair<T, T2>> Zip<TOtherCollect, T2>(TOtherCollect collect2) 
             where TOtherCollect : struct, ICollectionWrapper<T2>
         {

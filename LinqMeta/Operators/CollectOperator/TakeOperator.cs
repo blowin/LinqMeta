@@ -9,7 +9,7 @@ namespace LinqMeta.Operators.CollectOperator
     public struct TakeOperator<TCollect, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
     {
-        private TCollect _oldCollect;
+        private TCollect _colllection;
 
         private int _index;
         private uint _takeCount;
@@ -18,7 +18,7 @@ namespace LinqMeta.Operators.CollectOperator
         public bool HasIndexOverhead
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _oldCollect.HasIndexOverhead; }
+            get { return _colllection.HasIndexOverhead; }
         }
 
         public bool HasNext
@@ -26,21 +26,10 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (_oldCollect.HasIndexOverhead)
+                if(_colllection.HasNext && ++_index < _takeCount)
                 {
-                    if(_oldCollect.HasNext && ++_index < _takeCount)
-                    {
-                        _item = _oldCollect.Value;
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (_oldCollect.Size < _index && ++_index < _takeCount)
-                    {
-                        _item = _oldCollect[(uint) _index];
-                        return true;
-                    }
+                    _item = _colllection.Value;
+                    return true;
                 }
                 
                 _index = -1;
@@ -57,18 +46,18 @@ namespace LinqMeta.Operators.CollectOperator
         public T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _oldCollect[index]; }
+            get { return _colllection[index]; }
         }
 
         public int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return (int)Math.Min(_oldCollect.Size, _takeCount); }
+            get { return (int)Math.Min(_colllection.Size, _takeCount); }
         }
 
-        public TakeOperator(TCollect oldCollect, uint takeCount)
+        public TakeOperator(TCollect colllection, uint takeCount)
         {
-            _oldCollect = oldCollect;
+            _colllection = colllection;
             _takeCount = takeCount;
             _index = -1;
             _item = default(T);
