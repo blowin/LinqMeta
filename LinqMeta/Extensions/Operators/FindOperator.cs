@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
 using LinqMetaCore;
@@ -7,6 +8,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class FindOperator
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static T FindElementInAllCollection<TCollection, TCond, T>(this TCollection collection, TCond cond)
             where TCollection : struct, ICollectionWrapper<T>
             where TCond : struct, IFunctor<T, T, bool>

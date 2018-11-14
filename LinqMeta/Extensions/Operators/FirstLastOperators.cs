@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
@@ -6,6 +7,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class FirstLastOperators
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Option<T> FirstMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
@@ -19,6 +21,7 @@ namespace LinqMeta.Extensions.Operators
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Option<T> LastMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {

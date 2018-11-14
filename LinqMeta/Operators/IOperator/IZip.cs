@@ -21,5 +21,14 @@ namespace LinqMeta.Operators.IOperator
         OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2>
             ZipSelect<TOtherCollect, T2>(TOtherCollect collect2, Func<Pair<T, T2>, T2> select)
             where TOtherCollect : struct, ICollectionWrapper<T2>;
+        
+        OperatorWrapper<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, Pair<T, T2>> ZipBox<T2>(ICollectionWrapper<T2> collect2);
+
+        OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, TSelect, Pair<T, T2>, T2>, T2>
+            ZipBoxSelect<TSelect, T2>(ICollectionWrapper<T2> collect2, TSelect select)
+            where TSelect : struct, IFunctor<Pair<T, T2>, T2>;
+        
+        OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2>
+            ZipBoxSelect<T2>(ICollectionWrapper<T2> collect2, Func<Pair<T, T2>, T2> select);
     }
 }

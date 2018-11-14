@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Operators.Number;
 using LinqMetaCore;

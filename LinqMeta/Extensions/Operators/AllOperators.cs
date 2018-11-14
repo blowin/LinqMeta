@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
 using LinqMetaCore;
@@ -7,6 +8,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class AllOperators
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AllMeta<TCollect, TFilter, T>(this TCollect collect, TFilter filter)
             where TCollect : struct, ICollectionWrapper<T>
             where TFilter : struct, IFunctor<T, bool>

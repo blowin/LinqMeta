@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using LinqMeta.CollectionWrapper;
 using LinqMeta.DataTypes;
 using LinqMeta.Extensions;
 using LinqMeta.Extensions.Operators;
+using LinqMeta.Extensions.Operators.CollectWrapperOperators;
 using Xunit;
 
 namespace LinqMetaTest
@@ -97,6 +99,10 @@ namespace LinqMetaTest
         {
             var first = arr.TakeWhile((i, i1) => i1 != 6).Sum();
             var second = arr.MetaOperators().TakeWhileIndex(pair => pair.Index != 6).Sum();
+            Assert.Equal(first, second);
+            
+            first = arr.TakeWhile((i, i1) => i1 < 8).Sum();
+            second = arr.MetaOperators().TakeWhileIndex(pair => pair.Index < 8).Sum();
             Assert.Equal(first, second);
         }
         
@@ -192,6 +198,19 @@ namespace LinqMetaTest
         }
 
         [Fact]
+        public void SelectMany()
+        {
+            var selectMany = Enumerable.Range(0, 24).Select(i => Enumerable.Repeat(i, i).ToList()).ToArray();
+            
+            var linq = selectMany.SelectMany(ints => ints.TakeWhile((i, i1) => i1 < 3)).Where(i => i % 2 == 0).Sum();
+
+            var linqMeta = selectMany.MetaOperators().SelectManyBox(ints => ints.MetaOperators()
+                .TakeWhileIndex(pair => pair.Index < 3).Collect).Where(i => i % 2 == 0).Sum();
+            
+            Assert.Equal(linq, linqMeta);
+        }
+        
+        [Fact]
         public void SkipWhileIndex()
         {
             var linq = arr.SkipWhile((i, i1) => i1 < 4).Sum();
@@ -201,26 +220,140 @@ namespace LinqMetaTest
             Assert.Equal(linq, linqMeta);
         }
         
-        /*
-         var metaVarUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
-                .Take(5);
+        [Fact]
+        public void Contain()
+        {
+            Assert.Equal(arr.Contains(2), arr.MetaOperators().Contains(2));
+            Assert.Equal(arr.Contains(-200), arr.MetaOperators().Contains(-200));
             
-            CollectWrapper<TakeOperator<WhereOperator<SelectIndexingOperator<ArrayWrapper<int>, FuncFunctor<ZipPair<int>, int>, int, int>, FuncFunctor<int, bool>, int>, int>, int> metaFullTypeUse = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Where(i => i % 2 == 0)
-                .Take(5);
-         */
-     /*   
+            Assert.Equal(arr.Contains(2), arr.MetaOperators().ContainsEq(2));
+            Assert.Equal(arr.Contains(-200), arr.MetaOperators().ContainsEq(-200));
+            
+            Assert.Equal(arr.FirstOrDefault(i => i == 10) != default(int), 
+                arr.MetaOperators().Contains(i => i == 10));
+            
+            Assert.Equal(arr.FirstOrDefault(i => i == 1000) != default(int), 
+                arr.MetaOperators().Contains(i => i == 1000));
+        }
+        
+        [Fact]
+        public void DefaultIfEmpty()
+        {
+            Assert.Equal(arr.DefaultIfEmpty(20).Sum(), arr.MetaOperators().DefaultIfEmpty(20).Sum());
+            
+            Assert.Equal(arr.DefaultIfEmpty(20).Sum(), arr.MetaOperators().DefaultIfEmpty(() => 20).Sum());
+            
+            Assert.Equal(Enumerable.Empty<int>().DefaultIfEmpty(20).Sum(), 
+                Enumerable.Empty<int>().MetaOperators().DefaultIfEmpty(20).Sum());
+            
+            Assert.Equal(Enumerable.Empty<int>().DefaultIfEmpty(20).Sum(), 
+                Enumerable.Empty<int>().MetaOperators().DefaultIfEmpty(() => 20).Sum());
+        }
+        
+        [Fact]
+        public void Count()
+        {
+            Assert.Equal(arr.Count(), arr.MetaOperators().Count());
+            
+            Assert.Equal(Enumerable.Empty<int>().Count(), Enumerable.Empty<int>().MetaOperators().Count());
+            
+            Assert.Equal(arr.Where(i => i % 2 == 0).Count(), arr.MetaOperators().Where(i => i % 2 == 0).Count());
+            
+            Assert.Equal(arr.Count(i => i % 2 == 0), arr.MetaOperators().Count(i => i % 2 == 0));
+            
+            Assert.Equal(arr.Count(i => i > 2000), arr.MetaOperators().Count(i => i > 2000));
+        }
+        
         [Fact]
         public void Zip()
         {
             var linqSum = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
-            var metaLinqSum = arr.MetaOperators().Zip<ArrayWrapper<int>, int>(Enumerable.Repeat(5, 5).ToArray().GetMetaIter())
+            var metaLinqSum = arr.MetaOperators().Zip<ArrayWrapper<int>, int>(Enumerable.Repeat(5, 5).ToArray().MetaWrapper())
                 .Select(pair => pair.First + pair.Second).Sum();
             
             Assert.Equal(linqSum, metaLinqSum);
 
             var linqSum2 = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
-            var metaLinqSum2 = arr.MetaOperators().ZipSelect(Enumerable.Repeat(5, 5).ToArray().GetMetaIter(), pair => pair.First + pair.Second).Sum();
+            var metaLinqSum2 = arr.MetaOperators().ZipSelect<EnumeratorWrapper<int>, int>(Enumerable.Repeat(5, 5).MetaWrapper(), pair => pair.First + pair.Second).Sum();
+            Assert.Equal(linqSum2, metaLinqSum2);
+
+            linqSum = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
+            metaLinqSum = arr.MetaOperators()
+                .ZipBoxSelect(Enumerable.Repeat(5, 5).MetaWrapper(), pair => pair.First + pair.Second).Sum();
+            
+            Assert.Equal(linqSum, metaLinqSum);
         }
-        */
+
+        [Fact]
+        public void Reverse()
+        {
+            Assert.Equal(arr.Reverse().ToArray(), arr.MetaOperators().Reverse().ToArray());
+
+            var linq = arr.Where(i => i % 2 == 0).Reverse().ToArray();
+            var metaLinq = arr.MetaOperators().Where(i => i % 2 == 0).Reverse().ToArray();
+                
+            Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void ToList()
+        {
+            Assert.Equal(arr.Where(i => i % 2 == 0).Select((i, i1) => i * i1).ToList(), 
+                         arr.MetaOperators().Where(i => i % 2 == 0).SelectIndex(pair => pair.Index * pair.Item).ToList());
+
+            Assert.Equal(arr.ToList(), arr.MetaOperators().ToList());
+
+            var linq = arr.SelectMany(i => Enumerable.Range(0, i)).TakeWhile(i => i < 10).ToList();
+            var metaLinq = arr.MetaOperators().SelectManyBox(i => Enumerable.Range(0, i).MetaWrapper())
+                .TakeWhile(i => i < 10).ToList();
+            Assert.Equal(linq, metaLinq);
+        }
+
+        [Fact]
+        public void ToArray()
+        {
+            Assert.Equal(arr.Take(7).Where(i => i % 2 == 0).ToArray(), arr.MetaOperators().Take(7).Where(i => i % 2 == 0).ToArray());
+            
+            Assert.Equal(arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).ToArray(), 
+                         arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).ToArray());
+        }
+        
+        [Fact]
+        public void LongCount()
+        {
+            Assert.Equal(arr.Take(7).Where(i => i % 2 == 0).LongCount(), arr.MetaOperators().Take(7).Where(i => i % 2 == 0).LongCount());
+            
+            Assert.Equal(arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).LongCount(), 
+                arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).LongCount());
+        }
+        
+        [Fact]
+        public void Average()
+        {
+            Assert.Equal(arr.Average(), arr.MetaOperators().Average());
+            
+            Assert.Equal(arr.Take(7).Where(i => i % 2 == 0).Average(), arr.MetaOperators().Take(7).Where(i => i % 2 == 0).Average());
+            
+            Assert.Equal(arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).Average(), 
+                arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).Average());
+        }
+        
+        [Fact]
+        public void AverageDec()
+        {
+            Assert.Equal(arr.Select(i => (decimal)i).Average(), arr.MetaOperators().AverageDec());
+            
+            Assert.Equal(arr.Take(7).Where(i => i % 2 == 0).Select(i => (decimal)i).Average(), 
+                arr.MetaOperators().Take(7).Where(i => i % 2 == 0).AverageDec());
+            
+            Assert.Equal(arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).Select(i => (decimal)i).Average(), 
+                arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).AverageDec());
+        }
+        
+        [Fact]
+        public void ToDictionary()
+        {
+            Assert.Equal(arr.ToDictionary(i => i), arr.MetaOperators().ToDictionary(i => i));
+        }
     }
 }

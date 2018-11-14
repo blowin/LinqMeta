@@ -1,14 +1,12 @@
-using LinqMeta.CollectionWrapper;
-using LinqMetaCore;
-using LinqMetaCore.Buffers;
+using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore.Intefaces;
 using LinqMetaCore.Utils;
 
 namespace LinqMeta.Extensions.Converters
 {
-    public static class ToArrayExtensions
+    public static class ToArrayOperators
     {
-        public static T[] ToMetaArray<TCollect, T>(this TCollect collect, uint? capacity = null)
+        public static T[] ToMetaArray<TCollect, T>(ref TCollect collect, uint? capacity = null)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)

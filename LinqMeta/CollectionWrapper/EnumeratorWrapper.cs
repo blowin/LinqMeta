@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LinqMetaCore.Intefaces;
@@ -22,8 +23,16 @@ namespace LinqMeta.CollectionWrapper
             {
                 if (_enumerator.MoveNext())
                     return true;
-                
-                _enumerator.Reset();
+
+                try
+                {
+                    _enumerator.Reset();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
                 return false;
             }
         }

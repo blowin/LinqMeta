@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LinqMeta.Operators.Number;
 using LinqMetaCore.Intefaces;
 
@@ -5,6 +6,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class SumOperator
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T SumMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {

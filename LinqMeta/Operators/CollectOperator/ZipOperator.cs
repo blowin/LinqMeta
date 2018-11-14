@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using LinqMeta.CollectionWrapper;
 using LinqMeta.DataTypes;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
@@ -10,7 +11,7 @@ namespace LinqMeta.Operators.CollectOperator
     [StructLayout(LayoutKind.Auto)]
     public struct ZipOperator<TFirstCollection, T, TSecondCollection, T2> : ICollectionWrapper<Pair<T, T2>>
         where TFirstCollection : struct, ICollectionWrapper<T>
-        where TSecondCollection : struct, ICollectionWrapper<T2>
+        where TSecondCollection : ICollectionWrapper<T2>
     {
         private TFirstCollection _firstCollection;
         private TSecondCollection _secondCollection;
@@ -92,7 +93,8 @@ namespace LinqMeta.Operators.CollectOperator
         {
             _firstCollection = firstCollection;
             _secondCollection = secondCollection;
-            _stateInfo = StateInfo.Create<TFirstCollection, TSecondCollection, T, T2>(ref firstCollection, ref _secondCollection);
+            var wrapSecond = new StructMaybeBoxCollectionWrapper<TSecondCollection, T2>(secondCollection);
+            _stateInfo = StateInfo.Create<TFirstCollection, StructMaybeBoxCollectionWrapper<TSecondCollection, T2>, T, T2>(ref firstCollection, ref wrapSecond);
             _stateInfo.IteratePack.Size = Math.Min(_stateInfo.IteratePack.Size, _secondCollection.Size);
             _item = default(Pair<T, T2>);
         }

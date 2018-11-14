@@ -64,8 +64,7 @@ namespace LinqMeta.Extensions.Operators
         public static MinMaxPair<T>? MaxMinMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return collect.MaxMinMeta<TCollect, GreaterThan<T>, LessThanOperator<T>, T>(default(GreaterThan<T>),
-                default(LessThanOperator<T>));
+            return MaxMinMeta<TCollect, GreaterThan<T>, LessThanOperator<T>, T>(collect, default(GreaterThan<T>), default(LessThanOperator<T>));
         }
     }
 }

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BenchmarkDotNet.Running;
-using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
 using JM.LinqFaster;
 using LinqMeta.Extensions;
-using LinqMeta.Functors;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 

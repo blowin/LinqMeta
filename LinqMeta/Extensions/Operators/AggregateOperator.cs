@@ -1,14 +1,13 @@
 using System;
 using System.Runtime.CompilerServices;
-using LinqMeta.CollectionWrapper;
 using LinqMeta.Functors;
-using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {
     public static class AggregateOperator
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TRes AggregateMeta<TCollect, TFolder, T, TRes>(this TCollect collect, TRes init, TFolder folder)
             where TCollect : struct, ICollectionWrapper<T>
             where TFolder : struct , IFunctor<TRes, T, TRes>
@@ -28,6 +27,7 @@ namespace LinqMeta.Extensions.Operators
             return init;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AggregateMeta<TCollect, TFolder, T>(this TCollect collect, TFolder folder)
             where TCollect : struct, ICollectionWrapper<T>
             where TFolder : struct , IFunctor<T, T, T>
@@ -63,15 +63,14 @@ namespace LinqMeta.Extensions.Operators
         public static TRes AggregateMeta<TCollect, T, TRes>(this TCollect collect, TRes init, Func<TRes, T, TRes> folder)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return collect.AggregateMeta<TCollect, FuncFunctor<TRes, T, TRes>, T, TRes>(init,
-                new FuncFunctor<TRes, T, TRes>(folder));
+            return AggregateMeta<TCollect, FuncFunctor<TRes, T, TRes>, T, TRes>(collect, init, new FuncFunctor<TRes, T, TRes>(folder));
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AggregateMeta<TCollect, T>(this TCollect collect, Func<T, T, T> folder)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return collect.AggregateMeta<TCollect, FuncFunctor<T, T, T>, T>(new FuncFunctor<T, T, T>(folder));
+            return AggregateMeta<TCollect, FuncFunctor<T, T, T>, T>(collect, new FuncFunctor<T, T, T>(folder));
         }
     }
 }

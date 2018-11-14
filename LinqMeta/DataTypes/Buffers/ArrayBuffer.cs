@@ -1,12 +1,14 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using LinqMetaCore.Buffers;
+using LinqMetaCore.Intefaces;
 using LinqMetaCore.Utils;
 
-namespace LinqMetaCore.Buffers
+namespace LinqMeta.DataTypes.Buffers
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct ArrayBuffer<T> : IBuffer<T>
+    internal struct ArrayBuffer<T> : IBuffer<T>
     {
         public const uint DefaultCapacity = 16;
         
@@ -17,6 +19,12 @@ namespace LinqMetaCore.Buffers
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get { return _size; }
+        }
+
+        public T this[uint index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return _buff[index]; }
         }
         
         private ArrayBuffer(uint capacity)
@@ -31,7 +39,7 @@ namespace LinqMetaCore.Buffers
             if (_size == _buff.Length)
                 Resize(_size > 0 ? (uint)(_size * 1.5) : DefaultCapacity);
 
-            _buff[_size] = add;
+            _buff[_size++] = add;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,6 +77,29 @@ namespace LinqMetaCore.Buffers
             return new ArrayBuffer<T>(capacity);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ArrayBuffer<T> CreateBuff<TCollect>(ref TCollect collect, uint capacity = DefaultCapacity)
+            where TCollect : struct, ICollectionWrapper<T>
+        {
+            if (collect.HasIndexOverhead)
+            {
+                var buff = new ArrayBuffer<T>(capacity);
+                while (collect.HasNext)
+                    buff.Add(collect.Value);
+
+                return buff;
+            }
+            else
+            {
+                var size = collect.Size;
+                var buff = new ArrayBuffer<T>((uint) size);
+                for (var i = 0u; i < size; ++i)
+                    buff.Add(collect[i]);
+
+                return buff;
+            }
+        }
+        
         #endregion
     }
 }

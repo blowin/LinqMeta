@@ -39,4 +39,21 @@ namespace LinqMeta.Functors
             return _functor.Invoke(param);
         }
     }
+    
+    public struct FuncFunctor<TRes> : IFunctor<TRes>
+    {
+        private Func<TRes> _functor;
+
+        public FuncFunctor(Func<TRes> functor)
+        {
+            ErrorUtil.NullCheck(functor, "functor");
+            _functor = functor;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TRes Invoke()
+        {
+            return _functor.Invoke();
+        }
+    }
 }

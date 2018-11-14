@@ -1,8 +1,5 @@
 using System.Runtime.CompilerServices;
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Functors;
 using LinqMeta.Functors.Math;
-using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
@@ -22,7 +19,7 @@ namespace LinqMeta.Extensions.Operators
         public static T MinMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return collect.MinMeta<TCollect, LessThanOperator<T>, T>(default(LessThanOperator<T>));
+            return MinMeta<TCollect, LessThanOperator<T>, T>(collect, default(LessThanOperator<T>));
         }
     }
 }

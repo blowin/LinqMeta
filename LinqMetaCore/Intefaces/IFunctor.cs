@@ -1,5 +1,10 @@
 namespace LinqMetaCore.Intefaces
 {
+    public interface IFunctor<TRes>
+    {
+        TRes Invoke();
+    }
+    
     public interface IFunctor<T, TRes>
     {
         TRes Invoke(T param);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
+using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore;
 using LinqMetaCore.Buffers;
 using LinqMetaCore.Intefaces;
@@ -7,9 +8,9 @@ using LinqMetaCore.Utils;
 
 namespace LinqMeta.Extensions.Converters
 {
-    public static class ToListExtensions
+    public static class ToListOperators
     {
-        public static List<T> ToMetaList<TCollect, T>(this TCollect collect, uint? capacity = null)
+        public static List<T> ToMetaList<TCollect, T>(ref TCollect collect, uint? capacity = null)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)

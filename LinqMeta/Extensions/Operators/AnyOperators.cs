@@ -1,18 +1,18 @@
-using LinqMeta.CollectionWrapper;
-using LinqMeta.Functors;
-using LinqMetaCore;
+using System.Runtime.CompilerServices;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Extensions.Operators
 {
     public static class AnyOperators
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AnyMeta<TCollect, T>(this TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return collect.FirstMeta<TCollect, T>().HasValue;
+            return FirstLastOperators.FirstMeta<TCollect, T>(collect).HasValue;
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AnyMeta<TCollect, TFilter, T>(this TCollect collect, TFilter filter)
             where TCollect : struct, ICollectionWrapper<T>
             where TFilter : struct, IFunctor<T, bool>
