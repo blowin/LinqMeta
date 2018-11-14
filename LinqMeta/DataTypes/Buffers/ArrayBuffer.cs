@@ -45,7 +45,7 @@ namespace LinqMeta.DataTypes.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray()
         {
-            if (_size != _buff.Length && _size > 0)
+            if (_size != (uint)_buff.Length && _size > 0)
                 ShrinkToFit();
             
             return _buff;
@@ -57,7 +57,7 @@ namespace LinqMeta.DataTypes.Buffers
         private void Resize(uint newSize)
         {
             var newArr = new T[newSize];
-            Array.Copy(_buff, 0, newArr, 0, (int)newSize);
+            Array.Copy(_buff, 0, newArr, 0, Math.Min(_buff.Length, (int)newSize));
             _buff = newArr;
         }
 
