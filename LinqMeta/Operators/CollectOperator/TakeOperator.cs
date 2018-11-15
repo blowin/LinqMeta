@@ -9,7 +9,7 @@ namespace LinqMeta.Operators.CollectOperator
     public struct TakeOperator<TCollect, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
     {
-        private TCollect _colllection;
+        private TCollect _colllect;
 
         private int _index;
         private uint _takeCount;
@@ -18,7 +18,7 @@ namespace LinqMeta.Operators.CollectOperator
         public bool HasIndexOverhead
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _colllection.HasIndexOverhead; }
+            get { return _colllect.HasIndexOverhead; }
         }
 
         public bool HasNext
@@ -26,9 +26,9 @@ namespace LinqMeta.Operators.CollectOperator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if(_colllection.HasNext && ++_index < _takeCount)
+                if(_colllect.HasNext && ++_index < _takeCount)
                 {
-                    _item = _colllection.Value;
+                    _item = _colllect.Value;
                     return true;
                 }
                 
@@ -46,18 +46,18 @@ namespace LinqMeta.Operators.CollectOperator
         public T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _colllection[index]; }
+            get { return _colllect[index]; }
         }
 
         public int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return (int)Math.Min(_colllection.Size, _takeCount); }
+            get { return (int)Math.Min(_colllect.Size, _takeCount); }
         }
 
-        public TakeOperator(TCollect colllection, uint takeCount)
+        public TakeOperator(ref TCollect colllect, uint takeCount)
         {
-            _colllection = colllection;
+            _colllect = colllect;
             _takeCount = takeCount;
             _index = -1;
             _item = default(T);

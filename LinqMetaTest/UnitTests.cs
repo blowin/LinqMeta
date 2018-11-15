@@ -8,14 +8,20 @@ using LinqMeta.CollectionWrapper;
 using LinqMeta.DataTypes;
 using LinqMeta.Extensions;
 using LinqMeta.Extensions.Operators;
-using LinqMeta.Extensions.Operators.CollectWrapperOperators;
 using Xunit;
 
 namespace LinqMetaTest
 {   
     public class UnitTest1
     {
-        private int[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, -2, -3};
+        private int[] arr = {1, 2, 3, -2, 4, 1, 6, 4, 8, 9, 10, 6, -2, -3, 1};
+
+        static string[] cars = { "Alfa Romeo", "Aston Martin", "Audi", "Nissan", "Chevrolet",  "Chrysler", "Dodge", "BMW", 
+            "Ferrari",  "Bentley", "Ford", "Lexus", "Mercedes", "Toyota", "Volvo", "Subaru" };
+
+        private string[] carsFirst = cars.Take(5).ToArray();
+        private string[] carsSecond = cars.Skip(4).ToArray();
+        
         private Stack<int> stack = new Stack<int>(Enumerable.Range(0, 10));
         private Dictionary<int, string> _dictionary = Enumerable
             .Repeat("Dima", 10)
@@ -298,24 +304,28 @@ namespace LinqMetaTest
         [Fact]
         public void ToList()
         {
-            Assert.Equal(arr.Where(i => i % 2 == 0).Select((i, i1) => i * i1).ToList(), 
-                         arr.MetaOperators().Where(i => i % 2 == 0).SelectIndex(pair => pair.Index * pair.Item).ToList());
+            var linq = arr.Where(i => i % 2 == 0).Select((i, i1) => i * i1).ToList();
+            var metaLinq = arr.MetaOperators().Where(i => i % 2 == 0).SelectIndex(pair => pair.Index * pair.Item)
+                .ToList();
+            Assert.Equal(linq, metaLinq);
 
             Assert.Equal(arr.ToList(), arr.MetaOperators().ToList());
 
-            var linq = arr.SelectMany(i => Enumerable.Range(0, i)).TakeWhile(i => i < 10).ToList();
-            var metaLinq = arr.MetaOperators().SelectManyBox(i => Enumerable.Range(0, i).MetaWrapper())
-                .TakeWhile(i => i < 10).ToList();
-            Assert.Equal(linq, metaLinq);
+            var linq2 = arr.SelectMany(i => Enumerable.Range(0, i)).Take(3).ToList();
+            var metaLinq2 = arr.MetaOperators().SelectManyBox(i => Enumerable.Range(0, i).MetaWrapper()).Take(3).ToList();
+            Assert.Equal(linq2, metaLinq2);
         }
 
         [Fact]
         public void ToArray()
         {
-            Assert.Equal(arr.Take(7).Where(i => i % 2 == 0).ToArray(), arr.MetaOperators().Take(7).Where(i => i % 2 == 0).ToArray());
-            
-            Assert.Equal(arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).ToArray(), 
-                         arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).ToArray());
+            var linq = arr.Take(7).Where(i => i % 2 == 0).ToArray();
+            var metaLinq = arr.MetaOperators().Take(7).Where(i => i % 2 == 0).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            var linq2 = arr.Concat(Enumerable.Repeat(2, 5)).Skip(3).ToArray();
+            var metaLinq2 = arr.MetaOperators().Concat(Enumerable.Repeat(2, 5).MetaWrapper()).Skip(3).ToArray();
+            Assert.Equal(linq2, metaLinq2);
         }
         
         [Fact]
@@ -353,7 +363,68 @@ namespace LinqMetaTest
         [Fact]
         public void ToDictionary()
         {
-            Assert.Equal(arr.ToDictionary(i => i), arr.MetaOperators().ToDictionary(i => i));
+            var uniqSeq = Enumerable.Range(0, 100);
+            Assert.Equal(uniqSeq.ToDictionary(i => i), uniqSeq.MetaOperators().ToDictionary(i => i));
+        }
+        
+        [Fact]
+        public void Distinct()
+        {
+            Assert.Equal(arr.Distinct().ToArray(), arr.MetaOperators().Distinct().ToArray());
+            
+            Assert.Equal(arr.Where(i => i % 2 == 0).Distinct().ToArray(), 
+                arr.MetaOperators().Where(i => i % 2 == 0).Distinct().ToArray());
+        }
+
+        [Fact]
+        public void Union()
+        {
+            var linq = carsFirst.Union(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().Union(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Where((s, i) => i != 1).Union(carsSecond).ToArray();
+            metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Union(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Union(carsSecond).Where((s, i) => i != 1).ToArray();
+            metaLinq = carsFirst.MetaOperators().Union(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1)
+                .ToArray();
+            Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void Intersect()
+        {
+            var linq = carsFirst.Intersect(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().Intersect(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Where((s, i) => i != 1).Intersect(carsSecond).ToArray();
+            metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Intersect(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Intersect(carsSecond).Where((s, i) => i != 1).ToArray();
+            metaLinq = carsFirst.MetaOperators().Intersect(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1)
+                .ToArray();
+            Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void Except()
+        {
+            var linq = carsFirst.Except(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().Except(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Where((s, i) => i != 1).Except(carsSecond).ToArray();
+            metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Except(carsSecond.MetaWrapper()).ToArray();
+            Assert.Equal(linq, metaLinq);
+
+            linq = carsFirst.Except(carsSecond).Where((s, i) => i != 1).ToArray();
+            metaLinq = carsFirst.MetaOperators().Except(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1)
+                .ToArray();
+            Assert.Equal(linq, metaLinq);
         }
     }
 }

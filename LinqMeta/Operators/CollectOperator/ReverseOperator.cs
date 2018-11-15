@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Extensions.Operators.CollectWrapperOperators
+namespace LinqMeta.Operators.CollectOperator
 {
     [StructLayout(LayoutKind.Auto)]
     public struct ReverseOperator<TCollect, T> : ICollectionWrapper<T>
@@ -43,7 +43,7 @@ namespace LinqMeta.Extensions.Operators.CollectWrapperOperators
             get { return _collect[(uint) (_lastIndexItem - index)]; }
         }
 
-        public ReverseOperator(TCollect collect)
+        public ReverseOperator(ref TCollect collect)
         {
             _collect = collect;
             

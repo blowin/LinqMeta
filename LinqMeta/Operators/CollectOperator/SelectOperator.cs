@@ -55,7 +55,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return _oldCollect.Size; }
         }
 
-        public SelectOperator(TOldCollect oldCollect, TSelector selector)
+        public SelectOperator(ref TOldCollect oldCollect, ref TSelector selector)
         {
             _oldCollect = oldCollect;
             _selector = selector;

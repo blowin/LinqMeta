@@ -2,7 +2,7 @@ using System;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.Last
 {
     public interface ILast<T>
     {

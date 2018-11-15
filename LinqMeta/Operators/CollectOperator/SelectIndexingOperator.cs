@@ -56,7 +56,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return _oldCollect.Size; }
         }
 
-        public SelectIndexingOperator(TOldCollect oldCollect, TSelector selector)
+        public SelectIndexingOperator(ref TOldCollect oldCollect, ref TSelector selector)
         {
             _oldCollect = oldCollect;
             _selector = selector;

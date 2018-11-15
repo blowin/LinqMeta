@@ -1,8 +1,10 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.CollectOperator
 {
+    [StructLayout(LayoutKind.Auto)]
     public struct SelectManyOperator<TFirst, T, TSecond, T2, TSelector> : ICollectionWrapper<T2>
         where TFirst : struct, ICollectionWrapper<T>
         where TSecond : ICollectionWrapper<T2>
@@ -155,7 +157,7 @@ namespace LinqMeta.Operators.CollectOperator
             }
         }
 
-        public SelectManyOperator(TFirst first, TSelector selector)
+        public SelectManyOperator(ref TFirst first, ref TSelector selector)
         {
             _first = first;
             _second = default(TSecond);

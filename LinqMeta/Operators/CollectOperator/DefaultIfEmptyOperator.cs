@@ -1,8 +1,10 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.CollectOperator
 {
+    [StructLayout(LayoutKind.Auto)]
     public struct DefaultIfEmptyOperator<TCollect, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
     {
@@ -99,7 +101,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return _collect[index]; }
         }
 
-        public DefaultIfEmptyOperator(TCollect collect, T defaultVal)
+        public DefaultIfEmptyOperator(ref TCollect collect, T defaultVal)
         {
             _collect = collect;
             _item = defaultVal;

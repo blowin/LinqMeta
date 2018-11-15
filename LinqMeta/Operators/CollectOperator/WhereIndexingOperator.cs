@@ -73,7 +73,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return default(T); }
         }
 
-        public WhereIndexingOperator(TCollect collect, TFilter filter)
+        public WhereIndexingOperator(ref TCollect collect, ref TFilter filter)
         {
             _collect = collect;
             _filter = filter;

@@ -1,6 +1,6 @@
 using LinqMetaCore;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.ElementAt
 {
     public interface IElementAt<T>
     {

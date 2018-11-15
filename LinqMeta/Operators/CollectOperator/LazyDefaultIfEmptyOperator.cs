@@ -1,9 +1,11 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using LinqMeta.Functors;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators.CollectOperator
 {
+    [StructLayout(LayoutKind.Auto)]
     public struct LazyDefaultIfEmptyOperator<TCollect, T, TFactory> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
         where TFactory : struct, IFunctor<T>
@@ -104,7 +106,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return _collect[index]; }
         }
 
-        public LazyDefaultIfEmptyOperator(TCollect collect, TFactory factory)
+        public LazyDefaultIfEmptyOperator(ref TCollect collect, ref TFactory factory)
         {
             _collect = collect;
             _factory = factory;

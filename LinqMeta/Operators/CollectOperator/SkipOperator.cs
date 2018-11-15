@@ -64,7 +64,7 @@ namespace LinqMeta.Operators.CollectOperator
             }
         }
 
-        public SkipOperator(TCollect oldCollect, uint skipCount)
+        public SkipOperator(ref TCollect oldCollect, uint skipCount)
         {
             _oldCollect = oldCollect;
             _skipCount = skipCount;

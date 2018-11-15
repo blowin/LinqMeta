@@ -98,7 +98,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return 0; }
         }
 
-        public SkipWhileOperator(TCollect collection, TFilter filter)
+        public SkipWhileOperator(ref TCollect collection, ref TFilter filter)
         {
             _collection = collection;
             _filter = filter;

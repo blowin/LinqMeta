@@ -6,6 +6,10 @@ using LinqMeta.Operators.IOperator.Select;
 using LinqMeta.Operators.IOperator.ConvertToCollect;
 using LinqMeta.Operators.IOperator.Count;
 using LinqMeta.Operators.IOperator.DefaultIfEmpty;
+using LinqMeta.Operators.IOperator.ElementAt;
+using LinqMeta.Operators.IOperator.First;
+using LinqMeta.Operators.IOperator.Last;
+using LinqMeta.Operators.IOperator.MaxMin;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.Operators
@@ -17,8 +21,11 @@ namespace LinqMeta.Operators
         IMin<T>,
         ISum<T>,
         IFirst<T>,
+        IFirstOrDefault<T>,
         ILast<T>,
+        ILastOrDefault<T>,
         IElementAt<T>,
+        IElementAtOrDefault<T>,
         IEmpty,
         IStatistic<T>,
         IMaxMin<T>,
@@ -47,6 +54,10 @@ namespace LinqMeta.Operators
         IDefaultIfEmpty<TCollect, T>,
         ILazyDefaultIfEmpty<TCollect, T>,
         IReverse<TCollect, T>,
+        IDistinct<TCollect, T>,
+        IExcept<TCollect, T>,
+        IIntersect<TCollect, T>,
+        IUnion<TCollect, T>,
 
         IToArray<T>,
         IToList<T>,

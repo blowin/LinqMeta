@@ -5,7 +5,6 @@ using LinqMeta.CollectionWrapper.EnumeratorWrapper;
 using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Extensions.Converters;
 using LinqMeta.Extensions.Operators;
-using LinqMeta.Extensions.Operators.CollectWrapperOperators;
 using LinqMeta.Functors;
 using LinqMeta.Operators;
 using LinqMeta.Operators.Cast;
@@ -145,15 +144,35 @@ namespace LinqMeta.CollectionWrapper
         public Option<T> First<TFilter>(TFilter predicat) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return new WhereOperator<TCollect, TFilter, T>(_collect, predicat).FirstMeta<WhereOperator<TCollect, TFilter, T>, T>();
+            return new WhereOperator<TCollect, TFilter, T>(ref _collect, ref predicat).FirstMeta<WhereOperator<TCollect, TFilter, T>, T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> First(Func<T, bool> predicat)
         {
-            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(_collect, new FuncFunctor<T, bool>(predicat)).FirstMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
+            var func = new FuncFunctor<T, bool>(predicat);
+            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func).FirstMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T FirstOrDefault()
+        {
+            return First().GetValueOrDefault();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T FirstOrDefault<TPredicat>(TPredicat predicat) 
+            where TPredicat : struct, IFunctor<T, bool>
+        {
+            return First<TPredicat>(predicat).GetValueOrDefault();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T FirstOrDefault(Func<T, bool> predicat)
+        {
+            return First(predicat).GetValueOrDefault();
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last()
         {
@@ -164,21 +183,47 @@ namespace LinqMeta.CollectionWrapper
         public Option<T> Last<TFilter>(TFilter filter) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return new WhereOperator<TCollect, TFilter, T>(_collect, filter).LastMeta<WhereOperator<TCollect, TFilter, T>, T>();
+            return new WhereOperator<TCollect, TFilter, T>(ref _collect, ref filter).LastMeta<WhereOperator<TCollect, TFilter, T>, T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last(Func<T, bool> filter)
         {
-            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(_collect, new FuncFunctor<T, bool>(filter)).LastMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
+            var func = new FuncFunctor<T, bool>(filter);
+            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func).LastMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T LastOrDefault()
+        {
+            return Last().GetValueOrDefault();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T LastOrDefault<TFilter>(TFilter filter) 
+            where TFilter : struct, IFunctor<T, bool>
+        {
+            return Last(filter).GetValueOrDefault();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T LastOrDefault(Func<T, bool> filter)
+        {
+            return Last(filter).GetValueOrDefault();
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> ElementAt(uint index)
         {
             return _collect.NthMeta<TCollect, T>(index);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T ElementAtOrDefault(uint index)
+        {
+            return ElementAt(index).GetValueOrDefault();
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEmpty()
         {
@@ -304,16 +349,18 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<SelectOperator<TCollect, CastOperator<T, TNew>, T, TNew>, TNew> Cast<TNew>() 
             where TNew : T
         {
+            var caster = default(CastOperator<T, TNew>);
             return new OperatorWrapper<SelectOperator<TCollect, CastOperator<T, TNew>, T, TNew>, TNew>(
-                    new SelectOperator<TCollect, CastOperator<T, TNew>, T, TNew>(_collect, default(CastOperator<T, TNew>))
+                    new SelectOperator<TCollect, CastOperator<T, TNew>, T, TNew>(ref _collect, ref caster)
                 );
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>, TNew> UnsafeCast<TNew>()
         {
+            var caster = default(UnsafeCast<T, TNew>);
             return new OperatorWrapper<SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>, TNew>(
-                new SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>(_collect, default(UnsafeCast<T, TNew>))
+                new SelectOperator<TCollect, UnsafeCast<T, TNew>, T, TNew>(ref _collect, ref caster)
             );
         }
         
@@ -321,10 +368,13 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>, TNew> OfType<TNew>() 
             where TNew : class
         {
+            var typeOfOperator = default(TypeOfOperator<T, TNew>);
+            var notNullOperator = default(NotNullOperator<TNew>);
+            var selectOperator =
+                new SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>(ref _collect, ref typeOfOperator);
             return new OperatorWrapper<WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>, TNew>(
                     new WhereOperator<SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>, NotNullOperator<TNew>, TNew>(
-                            new SelectOperator<TCollect, TypeOfOperator<T, TNew>, T, TNew>(_collect, default(TypeOfOperator<T, TNew>)), 
-                            default(NotNullOperator<TNew>)
+                            ref selectOperator, ref notNullOperator
                         )
                 );
         }
@@ -334,15 +384,16 @@ namespace LinqMeta.CollectionWrapper
             where TSelector : struct, IFunctor<T, TNew>
         {
             return new OperatorWrapper<SelectOperator<TCollect, TSelector, T, TNew>, TNew>(
-                    new SelectOperator<TCollect, TSelector, T, TNew>(_collect, selector)
+                    new SelectOperator<TCollect, TSelector, T, TNew>(ref _collect, ref selector)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectOperator<TCollect, FuncFunctor<T, TNew>, T, TNew>, TNew> Select<TNew>(Func<T, TNew> selector)
         {
+            var func = new FuncFunctor<T, TNew>(selector);
             return new OperatorWrapper<SelectOperator<TCollect, FuncFunctor<T, TNew>, T, TNew>, TNew>(
-                    new SelectOperator<TCollect, FuncFunctor<T, TNew>, T, TNew>(_collect, new FuncFunctor<T, TNew>(selector))
+                    new SelectOperator<TCollect, FuncFunctor<T, TNew>, T, TNew>(ref _collect, ref func)
                 );
         }
         
@@ -351,15 +402,16 @@ namespace LinqMeta.CollectionWrapper
             where TSelector : struct, IFunctor<ZipPair<T>, TNew>
         {
             return new OperatorWrapper<SelectIndexingOperator<TCollect, TSelector, T, TNew>, TNew>(
-                    new SelectIndexingOperator<TCollect, TSelector, T, TNew>(_collect, selector)
+                    new SelectIndexingOperator<TCollect, TSelector, T, TNew>(ref _collect, ref selector)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, TNew>, T, TNew>, TNew> SelectIndex<TNew>(Func<ZipPair<T>, TNew> selector)
         {
+            var func = new FuncFunctor<ZipPair<T>, TNew>(selector);
             return new OperatorWrapper<SelectIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, TNew>, T, TNew>, TNew>(
-                    new SelectIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, TNew>, T, TNew>(_collect, new FuncFunctor<ZipPair<T>, TNew>(selector))
+                    new SelectIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, TNew>, T, TNew>(ref _collect, ref func)
                 );
         }
 
@@ -368,7 +420,7 @@ namespace LinqMeta.CollectionWrapper
             where TOtherCollect : struct, ICollectionWrapper<T2> where TSelector : struct, IFunctor<T, TOtherCollect>
         {
             return new OperatorWrapper<SelectManyOperator<TCollect, T, TOtherCollect, T2, TSelector>, T2>(
-                    new SelectManyOperator<TCollect, T, TOtherCollect, T2, TSelector>(_collect, select)
+                    new SelectManyOperator<TCollect, T, TOtherCollect, T2, TSelector>(ref _collect, ref select)
                 );
         }
 
@@ -376,8 +428,9 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<SelectManyOperator<TCollect, T, TOtherCollect, T2, FuncFunctor<T, TOtherCollect>>, T2> SelectMany<TOtherCollect, T2>(Func<T, TOtherCollect> @select) 
             where TOtherCollect : struct, ICollectionWrapper<T2>
         {
+            var func = new FuncFunctor<T, TOtherCollect>(select);
             return new OperatorWrapper<SelectManyOperator<TCollect, T, TOtherCollect, T2, FuncFunctor<T, TOtherCollect>>, T2>(
-                    new SelectManyOperator<TCollect, T, TOtherCollect, T2, FuncFunctor<T, TOtherCollect>>(_collect, new FuncFunctor<T, TOtherCollect>(select)))
+                    new SelectManyOperator<TCollect, T, TOtherCollect, T2, FuncFunctor<T, TOtherCollect>>(ref _collect, ref func))
                 ;
         }
 
@@ -386,16 +439,17 @@ namespace LinqMeta.CollectionWrapper
             where TSelector : struct, IFunctor<T, ICollectionWrapper<T2>>
         {
             return new OperatorWrapper<SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, TSelector>, T2>(
-                    new SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, TSelector>(_collect, select)
+                    new SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, TSelector>(ref _collect, ref select)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, ICollectionWrapper<T2>>>, T2> SelectManyBox<T2>(Func<T, ICollectionWrapper<T2>> @select)
         {
+            var functor = new FuncFunctor<T, ICollectionWrapper<T2>>(select);
             return new OperatorWrapper<SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, ICollectionWrapper<T2>>>, T2>(
                     new SelectManyOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, ICollectionWrapper<T2>>>(
-                            _collect, new FuncFunctor<T, ICollectionWrapper<T2>>(select)
+                           ref _collect, ref functor
                         )
                 );
         }
@@ -405,15 +459,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<T, bool>
         {
             return new OperatorWrapper<WhereOperator<TCollect, TFilter, T>, T>(
-                    new WhereOperator<TCollect, TFilter, T>(_collect, filter)
+                    new WhereOperator<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T> Where(Func<T, bool> filter)
         {
+            var functor = new FuncFunctor<T, bool>(filter);
             return new OperatorWrapper<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>(
-                    new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(_collect, new FuncFunctor<T, bool>(filter))
+                    new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref functor)
                 );
         }
         
@@ -422,15 +477,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<ZipPair<T>, bool>
         {
             return new OperatorWrapper<WhereIndexingOperator<TCollect, TFilter, T>, T>(
-                    new WhereIndexingOperator<TCollect, TFilter, T>(_collect, filter)
+                    new WhereIndexingOperator<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<WhereIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T> WhereIndex(Func<ZipPair<T>, bool> filter)
         {
+            var func = new FuncFunctor<ZipPair<T>, bool>(filter);
             return new OperatorWrapper<WhereIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T>(
-                    new WhereIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(_collect, new FuncFunctor<ZipPair<T>, bool>(filter))
+                    new WhereIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(ref _collect, ref func)
                 );
         }
         
@@ -438,7 +494,7 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<TakeOperator<TCollect, T>, T> Take(uint count)
         {
             return new OperatorWrapper<TakeOperator<TCollect, T>, T>(
-                    new TakeOperator<TCollect, T>(_collect, count)
+                    new TakeOperator<TCollect, T>(ref _collect, count)
                 );
         }
         
@@ -447,15 +503,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<T, bool>
         {
             return new OperatorWrapper<TakeWhile<TCollect, TFilter, T>, T>(
-                    new TakeWhile<TCollect, TFilter, T>(_collect, filter)
+                    new TakeWhile<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<TakeWhile<TCollect, FuncFunctor<T, bool>, T>, T> TakeWhile(Func<T, bool> filter)
         {
+            var func = new FuncFunctor<T, bool>(filter);
             return new OperatorWrapper<TakeWhile<TCollect, FuncFunctor<T, bool>, T>, T>(
-                    new TakeWhile<TCollect, FuncFunctor<T, bool>, T>(_collect, new FuncFunctor<T, bool>(filter))
+                    new TakeWhile<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func)
                 );
         }
         
@@ -464,15 +521,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<ZipPair<T>, bool>
         {
             return new OperatorWrapper<TakeWhileIndexingOperator<TCollect, TFilter, T>, T>(
-                    new TakeWhileIndexingOperator<TCollect, TFilter, T>(_collect, filter)
+                    new TakeWhileIndexingOperator<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T> TakeWhileIndex(Func<ZipPair<T>, bool> filter)
         {
+            var func = new FuncFunctor<ZipPair<T>, bool>(filter);
             return new OperatorWrapper<TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T>(
-                    new TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(_collect, new FuncFunctor<ZipPair<T>, bool>(filter))
+                    new TakeWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(ref _collect, ref func)
                 );
         }
         
@@ -480,7 +538,7 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<SkipOperator<TCollect, T>, T> Skip(uint count)
         {
             return new OperatorWrapper<SkipOperator<TCollect, T>, T>(
-                    new SkipOperator<TCollect, T>(_collect, count)
+                    new SkipOperator<TCollect, T>(ref _collect, count)
                 );
         }
         
@@ -489,15 +547,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<T, bool>
         {
             return new OperatorWrapper<SkipWhileOperator<TCollect, TFilter, T>, T>(
-                    new SkipWhileOperator<TCollect, TFilter, T>(_collect, filter)
+                    new SkipWhileOperator<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>, T> SkipWhile(Func<T, bool> filter)
         {
+            var func = new FuncFunctor<T, bool>(filter);
             return new OperatorWrapper<SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>, T>(
-                    new SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>(_collect, new FuncFunctor<T, bool>(filter))
+                    new SkipWhileOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func)
                 );
         }
         
@@ -506,15 +565,16 @@ namespace LinqMeta.CollectionWrapper
             where TFilter : struct, IFunctor<ZipPair<T>, bool>
         {
             return new OperatorWrapper<SkipWhileIndexingOperator<TCollect, TFilter, T>, T>(
-                    new SkipWhileIndexingOperator<TCollect, TFilter, T>(_collect, filter)
+                    new SkipWhileIndexingOperator<TCollect, TFilter, T>(ref _collect, ref filter)
                 );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T> SkipWhileIndex(Func<ZipPair<T>, bool> filter)
         {
+            var func = new FuncFunctor<ZipPair<T>, bool>(filter);
             return new OperatorWrapper<SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>, T>(
-                    new SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(_collect, new FuncFunctor<ZipPair<T>, bool>(filter))
+                    new SkipWhileIndexingOperator<TCollect, FuncFunctor<ZipPair<T>, bool>, T>(ref _collect, ref func)
                 );
         }
         
@@ -523,7 +583,7 @@ namespace LinqMeta.CollectionWrapper
             where TOtherCollect : struct, ICollectionWrapper<T2>
         {
             return new OperatorWrapper<ZipOperator<TCollect, T, TOtherCollect, T2>, Pair<T, T2>>(
-                    new ZipOperator<TCollect, T, TOtherCollect, T2>(_collect, collect2)
+                    new ZipOperator<TCollect, T, TOtherCollect, T2>(ref _collect, ref collect2)
                 );
         }
 
@@ -532,9 +592,10 @@ namespace LinqMeta.CollectionWrapper
             where TOtherCollect : struct, ICollectionWrapper<T2> 
             where TSelect : struct, IFunctor<Pair<T, T2>, T2>
         {
+            var zipOperator = new ZipOperator<TCollect, T, TOtherCollect, T2>(ref _collect, ref collect2);
             return new OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, TSelect, Pair<T, T2>, T2>, T2>(
                     new SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, TSelect, Pair<T, T2>, T2>(
-                            new ZipOperator<TCollect, T, TOtherCollect, T2>(_collect, collect2), select
+                            ref zipOperator, ref select
                         )
                 );
         }
@@ -543,9 +604,11 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2> ZipSelect<TOtherCollect, T2>(TOtherCollect collect2, Func<Pair<T, T2>, T2> @select) 
             where TOtherCollect : struct, ICollectionWrapper<T2>
         {
+            var zipOperator = new ZipOperator<TCollect, T, TOtherCollect, T2>(ref _collect, ref collect2);
+            var functor = new FuncFunctor<Pair<T, T2>, T2>(select);
             return new OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2>(
                     new SelectOperator<ZipOperator<TCollect, T, TOtherCollect, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>(
-                            new ZipOperator<TCollect, T, TOtherCollect, T2>(_collect, collect2), new FuncFunctor<Pair<T, T2>, T2>(select)
+                            ref zipOperator, ref functor
                         )
                 );
         }
@@ -555,7 +618,7 @@ namespace LinqMeta.CollectionWrapper
         {
             ErrorUtil.NullCheck(collect2, "collect2");
             return new OperatorWrapper<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, Pair<T, T2>>(
-                new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(_collect, collect2));
+                new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(ref _collect, ref collect2));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -563,9 +626,10 @@ namespace LinqMeta.CollectionWrapper
             where TSelect : struct, IFunctor<Pair<T, T2>, T2>
         {
             ErrorUtil.NullCheck(collect2, "collect2");
+            var zipOperator = new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(ref _collect, ref collect2);
             return new OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, TSelect, Pair<T, T2>, T2>, T2>(
                     new SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, TSelect, Pair<T, T2>, T2>(
-                            new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(_collect, collect2), select
+                            ref zipOperator, ref select
                         )
                 );
         }
@@ -573,9 +637,11 @@ namespace LinqMeta.CollectionWrapper
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2> ZipBoxSelect<T2>(ICollectionWrapper<T2> collect2, Func<Pair<T, T2>, T2> @select)
         {
+            var zipOperator = new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(ref _collect, ref collect2);
+            var func = new FuncFunctor<Pair<T, T2>, T2>(select);
             return new OperatorWrapper<SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>, T2>(
                     new SelectOperator<ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>, FuncFunctor<Pair<T, T2>, T2>, Pair<T, T2>, T2>(
-                            new ZipOperator<TCollect, T, ICollectionWrapper<T2>, T2>(_collect, collect2), new FuncFunctor<Pair<T, T2>, T2>(select)
+                           ref zipOperator, ref func
                         )
                 );
         }
@@ -584,38 +650,121 @@ namespace LinqMeta.CollectionWrapper
         public OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T> Concat<TOther>(TOther other) 
             where TOther : struct, ICollectionWrapper<T>
         {
-            return new OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T>(new ConcatOperator<TCollect, TOther, T>(_collect, other));
+            return new OperatorWrapper<ConcatOperator<TCollect, TOther, T>, T>(
+                    new ConcatOperator<TCollect, TOther, T>(ref _collect, ref other)
+                );
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T> DefaultIfEmpty()
         {
-            return new OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T>(new DefaultIfEmptyOperator<TCollect, T>(_collect, default(T)));
+            return new OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T>(
+                    new DefaultIfEmptyOperator<TCollect, T>(ref _collect, default(T))
+                );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T> DefaultIfEmpty(T defaultVal)
         {
-            return new OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T>(new DefaultIfEmptyOperator<TCollect, T>(_collect, defaultVal));
+            return new OperatorWrapper<DefaultIfEmptyOperator<TCollect, T>, T>(
+                    new DefaultIfEmptyOperator<TCollect, T>(ref _collect, defaultVal)
+                );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, TFactory>, T> DefaultIfEmpty<TFactory>(TFactory factory) 
             where TFactory : struct, IFunctor<T>
         {
-            return new OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, TFactory>, T>(new LazyDefaultIfEmptyOperator<TCollect, T, TFactory>(_collect, factory));
+            return new OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, TFactory>, T>(
+                    new LazyDefaultIfEmptyOperator<TCollect, T, TFactory>(ref _collect, ref factory)
+                );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, FuncFunctor<T>>, T> DefaultIfEmpty(Func<T> factory)
         {
-            return new OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, FuncFunctor<T>>, T>(new LazyDefaultIfEmptyOperator<TCollect, T, FuncFunctor<T>>(_collect, new FuncFunctor<T>(factory)));
+            var func = new FuncFunctor<T>(factory);
+            return new OperatorWrapper<LazyDefaultIfEmptyOperator<TCollect, T, FuncFunctor<T>>, T>(
+                    new LazyDefaultIfEmptyOperator<TCollect, T, FuncFunctor<T>>(ref _collect, ref func)
+                );
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<ReverseOperator<TCollect, T>, T> Reverse()
         {
-            return new OperatorWrapper<ReverseOperator<TCollect, T>, T>(new ReverseOperator<TCollect, T>(_collect));
+            return new OperatorWrapper<ReverseOperator<TCollect, T>, T>(
+                    new ReverseOperator<TCollect, T>(ref _collect)
+                );
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<DistinctOperator<TCollect, T>, T> Distinct()
+        {
+            return new OperatorWrapper<DistinctOperator<TCollect, T>, T>(
+                    new DistinctOperator<TCollect, T>(ref _collect, null)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<DistinctOperator<TCollect, T>, T> Distinct(IEqualityComparer<T> comparer)
+        {
+            return new OperatorWrapper<DistinctOperator<TCollect, T>, T>(
+                    new DistinctOperator<TCollect, T>(ref _collect, comparer)
+                );
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<ExceptOperator<TCollect, TSecond, T>, T> Except<TSecond>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<ExceptOperator<TCollect, TSecond, T>, T>(
+                    new ExceptOperator<TCollect, TSecond, T>(ref _collect, ref second, EqualityComparer<T>.Default)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<ExceptOperator<TCollect, TSecond, T>, T> Except<TSecond>(TSecond second, IEqualityComparer<T> comparer) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<ExceptOperator<TCollect, TSecond, T>, T>(
+                    new ExceptOperator<TCollect, TSecond, T>(ref _collect, ref second, comparer)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<IntersectOperator<TCollect, TSecond, T>, T> Intersect<TSecond>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<IntersectOperator<TCollect, TSecond, T>, T>(
+                    new IntersectOperator<TCollect, TSecond, T>(ref _collect, ref second, EqualityComparer<T>.Default)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<IntersectOperator<TCollect, TSecond, T>, T> Intersect<TSecond>(TSecond second, IEqualityComparer<T> comparer) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<IntersectOperator<TCollect, TSecond, T>, T>(
+                    new IntersectOperator<TCollect, TSecond, T>(ref _collect, ref second, comparer)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<UnionOperator<TCollect, TSecond, T>, T> Union<TSecond>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<UnionOperator<TCollect, TSecond, T>, T>(
+                    new UnionOperator<TCollect, TSecond, T>(ref _collect, ref second, EqualityComparer<T>.Default)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<UnionOperator<TCollect, TSecond, T>, T> Union<TSecond>(TSecond second, IEqualityComparer<T> comparer) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<UnionOperator<TCollect, TSecond, T>, T>(
+                    new UnionOperator<TCollect, TSecond, T>(ref _collect, ref second, comparer)
+                );
         }
         
         public CollectEnumeratorWrapper<TCollect, T> BuildEnumerator()

@@ -89,7 +89,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return _stateInfo.IteratePack.Size; }
         }
 
-        public ZipOperator(TFirstCollection firstCollection, TSecondCollection secondCollection)
+        public ZipOperator(ref TFirstCollection firstCollection, ref TSecondCollection secondCollection)
         {
             _firstCollection = firstCollection;
             _secondCollection = secondCollection;

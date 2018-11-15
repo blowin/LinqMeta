@@ -2,12 +2,12 @@ using System;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.First
 {
     public interface IFirst<T>
     {
         Option<T> First();
-
+        
         Option<T> First<TPredicat>(TPredicat predicat)
             where TPredicat : struct, IFunctor<T, bool>;
         

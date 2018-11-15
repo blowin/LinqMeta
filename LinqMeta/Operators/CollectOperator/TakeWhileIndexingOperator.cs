@@ -70,7 +70,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return 0; }
         }
 
-        public TakeWhileIndexingOperator(TCollect oldCollect, TFilter filter)
+        public TakeWhileIndexingOperator(ref TCollect oldCollect, ref TFilter filter)
         {
             _oldCollect = oldCollect;
             _filter = filter;

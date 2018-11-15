@@ -67,7 +67,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return 0; }
         }
 
-        public TakeWhile(TCollect oldCollect, TFilter filter)
+        public TakeWhile(ref TCollect oldCollect, ref TFilter filter)
         {
             _oldCollect = oldCollect;
             _filter = filter;

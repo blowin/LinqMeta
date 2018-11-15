@@ -146,7 +146,7 @@ namespace LinqMeta.Operators.CollectOperator
             }
         }
         
-        public ConcatOperator(TFirst first, TSecond second)
+        public ConcatOperator(ref TFirst first, ref TSecond second)
         {
             _first = first;
             _second = second;
