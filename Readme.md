@@ -80,6 +80,7 @@ Operation, like XXXDefault may replace. because XXX operators return special typ
 | TakeWhile      | +    | +        |
 | Zip      | +    | +        |
 | SequenceEqual | + | + |
+| ForEach | - | + |
 | ToArray      | +    | +        |
 | ToList      | +    | +        |
 | ToDictionary      | +    | +        |
