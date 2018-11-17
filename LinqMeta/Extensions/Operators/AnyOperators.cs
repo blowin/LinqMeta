@@ -6,14 +6,14 @@ namespace LinqMeta.Extensions.Operators
     public static class AnyOperators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AnyMeta<TCollect, T>(this TCollect collect)
+        public static bool AnyMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return FirstLastOperators.FirstMeta<TCollect, T>(collect).HasValue;
+            return FirstLastOperators.FirstMeta<TCollect, T>(ref collect).HasValue;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AnyMeta<TCollect, TFilter, T>(this TCollect collect, TFilter filter)
+        public static bool AnyMeta<TCollect, TFilter, T>(ref TCollect collect, ref TFilter filter)
             where TCollect : struct, ICollectionWrapper<T>
             where TFilter : struct, IFunctor<T, bool>
         {

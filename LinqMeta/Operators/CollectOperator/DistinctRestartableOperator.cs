@@ -5,7 +5,7 @@ using LinqMetaCore.Intefaces;
 namespace LinqMeta.Operators.CollectOperator
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct DistinctOperator<TCollect, T> : ICollectionWrapper<T>
+    public struct DistinctRestartableOperator<TCollect, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
     {
         private HashSet<T> _distinctCollect;
@@ -40,8 +40,11 @@ namespace LinqMeta.Operators.CollectOperator
                         if (_distinctCollect.Add(_item))
                             return true;
                     }
+
+                    _index = -1;
                 }
                 
+                _distinctCollect.Clear();
                 return false;
             }
         }
@@ -61,7 +64,7 @@ namespace LinqMeta.Operators.CollectOperator
             get { return default(T); }
         }
 
-        public DistinctOperator(ref TCollect collect, IEqualityComparer<T> comparer)
+        public DistinctRestartableOperator(ref TCollect collect, IEqualityComparer<T> comparer)
         {
             _collect = collect;
             _item = default(T);

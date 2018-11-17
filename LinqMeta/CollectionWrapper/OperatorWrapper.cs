@@ -34,27 +34,27 @@ namespace LinqMeta.CollectionWrapper
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double Average()
         {
-            return _collect.Average<TCollect, T>();
+            return AverageOperator.Average<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public decimal AverageDec()
         {
-            return _collect.AverageDec<TCollect, T>();
+            return AverageOperator.AverageDec<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Max<TComparer>(TComparer firstGreat) 
             where TComparer : struct, IFunctor<T, T, bool>
         {
-            return _collect.MaxMeta<TCollect, TComparer, T>(firstGreat);
+            return MaxOperator.MaxMeta<TCollect, TComparer, T>(ref _collect, ref firstGreat);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Max(Func<T, T, bool> firstGreat)
         {
             var functor = new FuncFunctor<T, T, bool>(firstGreat);
-            return _collect.MaxMeta<TCollect, FuncFunctor<T, T, bool>, T>(functor);
+            return MaxOperator.MaxMeta<TCollect, FuncFunctor<T, T, bool>, T>(ref _collect, ref functor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -67,20 +67,20 @@ namespace LinqMeta.CollectionWrapper
         public T Min<TComparer>(TComparer firstGreat) 
             where TComparer : struct, IFunctor<T, T, bool>
         {
-            return _collect.MinMeta<TCollect, TComparer, T>(firstGreat);
+            return MinOperator.MinMeta<TCollect, TComparer, T>(ref _collect, ref firstGreat);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Min(Func<T, T, bool> firstGreat)
         {
             var functor = new FuncFunctor<T, T, bool>(firstGreat);
-            return _collect.MinMeta<TCollect, FuncFunctor<T, T, bool>, T>(functor);
+            return MinOperator.MinMeta<TCollect, FuncFunctor<T, T, bool>, T>(ref _collect, ref functor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Min()
         {
-            return _collect.MinMeta<TCollect, T>();
+            return MinOperator.MinMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,70 +88,78 @@ namespace LinqMeta.CollectionWrapper
             where TMaxComparer : struct, IFunctor<T, T, bool> 
             where TMinComparer : struct, IFunctor<T, T, bool>
         {
-            return _collect.MaxMinMeta<TCollect, TMaxComparer, TMinComparer, T>(maxComparer, minComparer);
+            return MaxMinMetaOperator.MaxMinMeta<TCollect, TMaxComparer, TMinComparer, T>(
+                    ref _collect, ref maxComparer, ref minComparer
+                );
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MinMaxPair<T>? MaxMin(Func<T, T, bool> maxComparer, Func<T, T, bool> minComparer)
         {
-            return _collect.MaxMinMeta<TCollect, FuncFunctor<T, T, bool>, FuncFunctor<T, T, bool>, T>(new FuncFunctor<T, T, bool>(maxComparer), new FuncFunctor<T, T, bool>(minComparer));
+            var maxComparerWrap = new FuncFunctor<T, T, bool>(maxComparer);
+            var minComparerWrap = new FuncFunctor<T, T, bool>(minComparer);
+            return MaxMinMetaOperator.MaxMinMeta<TCollect, FuncFunctor<T, T, bool>, FuncFunctor<T, T, bool>, T>(
+                ref _collect, ref maxComparerWrap, ref minComparerWrap);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MinMaxPair<T>? MaxMin()
         {
-            return _collect.MaxMinMeta<TCollect, T>();
+            return MaxMinMetaOperator.MaxMinMeta<TCollect, T>(ref _collect);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TRes Aggregate<TFolder, TRes>(TRes init, TFolder folder) where TFolder : struct, IFunctor<TRes, T, TRes>
+        public TRes Aggregate<TFolder, TRes>(TRes init, TFolder folder) 
+            where TFolder : struct, IFunctor<TRes, T, TRes>
         {
-            return _collect.AggregateMeta<TCollect, TFolder, T, TRes>(init, folder);
+            return AggregateOperator.AggregateMeta<TCollect, TFolder, T, TRes>(ref _collect, init, ref folder);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Aggregate<TFolder>(TFolder folder) 
             where TFolder : struct, IFunctor<T, T, T>
         {
-            return _collect.AggregateMeta<TCollect, TFolder, T>(folder);
+            return AggregateOperator.AggregateMeta<TCollect, TFolder, T>(ref _collect, ref folder);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TRes Aggregate<TRes>(TRes init, Func<TRes, T, TRes> folder)
         {
-            return _collect.AggregateMeta<TCollect, T, TRes>(init, folder);
+            return AggregateOperator.AggregateMeta<TCollect, T, TRes>(ref _collect, init, folder);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Aggregate(Func<T, T, T> folder)
         {
-            return _collect.AggregateMeta<TCollect, T>(folder);
+            return AggregateOperator.AggregateMeta<TCollect, T>(ref _collect, folder);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Sum()
         {
-            return _collect.SumMeta<TCollect, T>();
+            return SumOperator.SumMeta<TCollect, T>(ref _collect);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> First()
         {
-            return _collect.FirstMeta<TCollect, T>();
+            return FirstLastOperators.FirstMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> First<TFilter>(TFilter predicat) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return new WhereOperator<TCollect, TFilter, T>(ref _collect, ref predicat).FirstMeta<WhereOperator<TCollect, TFilter, T>, T>();
+            var where = new WhereOperator<TCollect, TFilter, T>(ref _collect, ref predicat);
+            return FirstLastOperators.FirstMeta<WhereOperator<TCollect, TFilter, T>, T>(ref where);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> First(Func<T, bool> predicat)
         {
             var func = new FuncFunctor<T, bool>(predicat);
-            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func).FirstMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
+            var where = new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func);
+            return FirstLastOperators.FirstMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>(ref where);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -176,21 +184,23 @@ namespace LinqMeta.CollectionWrapper
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last()
         {
-            return _collect.LastMeta<TCollect, T>();
+            return FirstLastOperators.LastMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last<TFilter>(TFilter filter) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return new WhereOperator<TCollect, TFilter, T>(ref _collect, ref filter).LastMeta<WhereOperator<TCollect, TFilter, T>, T>();
+            var where = new WhereOperator<TCollect, TFilter, T>(ref _collect, ref filter);
+            return FirstLastOperators.LastMeta<WhereOperator<TCollect, TFilter, T>, T>(ref where);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> Last(Func<T, bool> filter)
         {
             var func = new FuncFunctor<T, bool>(filter);
-            return new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func).LastMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>();
+            var where = new WhereOperator<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func);
+            return FirstLastOperators.LastMeta<WhereOperator<TCollect, FuncFunctor<T, bool>, T>, T>(ref where);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,7 +225,7 @@ namespace LinqMeta.CollectionWrapper
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Option<T> ElementAt(uint index)
         {
-            return _collect.NthMeta<TCollect, T>(index);
+            return FirstLastOperators.NthMeta<TCollect, T>(ref _collect, index);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -233,116 +243,182 @@ namespace LinqMeta.CollectionWrapper
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StatisticInfo<T>? GetStatistic(StatisticValue flagsBuff)
         {
-            return _collect.GetStatisticMeta<TCollect, T>(flagsBuff);
+            return StatisticOperator.GetStatisticMeta<TCollect, T>(ref _collect, flagsBuff);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Any()
         {
-            return _collect.AnyMeta<TCollect, T>();
+            return AnyOperators.AnyMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Any<TFilter>(TFilter filter) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return _collect.AnyMeta<TCollect, TFilter, T>(filter);
+            return AnyOperators.AnyMeta<TCollect, TFilter, T>(ref _collect, ref filter);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Any(Func<T, bool> filter)
         {
-            return _collect.AnyMeta<TCollect, FuncFunctor<T, bool>, T>(new FuncFunctor<T, bool>(filter));
+            var func = new FuncFunctor<T, bool>(filter);
+            return AnyOperators.AnyMeta<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool All<TFilter>(TFilter filter) 
             where TFilter : struct, IFunctor<T, bool>
         {
-            return _collect.AllMeta<TCollect, TFilter, T>(filter);
+            return AllOperators.AllMeta<TCollect, TFilter, T>(ref _collect, ref filter);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool All(Func<T, bool> filter)
         {
-            return _collect.AllMeta<TCollect, FuncFunctor<T, bool>, T>(new FuncFunctor<T, bool>(filter));
+            var func = new FuncFunctor<T, bool>(filter);
+            return AllOperators.AllMeta<TCollect, FuncFunctor<T, bool>, T>(ref _collect, ref func);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T val)
         {
-            return _collect.ContainsMeta<TCollect, T>(val);
+            return ContainsOperator.ContainsMeta<TCollect, T>(ref _collect, val);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains<TPredicat>(TPredicat predicat) 
             where TPredicat : struct, IFunctor<T, bool>
         {
-            return _collect.ContainsMeta<TCollect, T, TPredicat>(predicat);
+            return ContainsOperator.ContainsMeta<TCollect, T, TPredicat>(ref _collect, ref predicat);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(Func<T, bool> predicat)
         {
-            return _collect.ContainsMeta<TCollect, T, FuncFunctor<T, bool>>(new FuncFunctor<T, bool>(predicat));
+            var functor = new FuncFunctor<T, bool>(predicat);
+            return ContainsOperator.ContainsMeta<TCollect, T, FuncFunctor<T, bool>>(ref _collect, ref functor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains<T2, TPredicat>(TPredicat predicat, T2 val) 
             where TPredicat : struct, IFunctor<T, T2, bool>
         {
-            return _collect.ContainsMeta<TCollect, T, TPredicat, T2>(predicat, val);
+            return ContainsOperator.ContainsMeta<TCollect, T, TPredicat, T2>(ref _collect, ref predicat, val);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains<T2>(Func<T, T2, bool> predicat, T2 val)
         {
-            return _collect.ContainsMeta<TCollect, T, FuncFunctor<T, T2, bool>, T2>(new FuncFunctor<T, T2, bool>(predicat), val);
+            var functor = new FuncFunctor<T, T2, bool>(predicat);
+            return ContainsOperator.ContainsMeta<TCollect, T, FuncFunctor<T, T2, bool>, T2>(ref _collect, ref functor, val);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsEq<T2>(T2 val) 
             where T2 : IEquatable<T>
         {
-            return _collect.ContainsEqMeta<TCollect, T, T2>(val);
+            return ContainsOperator.ContainsEqMeta<TCollect, T, T2>(ref _collect, val);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count()
         {
-            return _collect.CountMeta<TCollect, T>();
+            return CountOperator.CountMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<TPredicat>(TPredicat predicat) 
             where TPredicat : struct, IFunctor<T, bool>
         {
-            return _collect.CountMeta<TCollect, T, TPredicat>(predicat);
+            return CountOperator.CountMeta<TCollect, T, TPredicat>(ref _collect, ref predicat);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count(Func<T, bool> predicat)
         {
-            return _collect.CountMeta<TCollect, T, FuncFunctor<T, bool>>(new FuncFunctor<T, bool>(predicat));
+            var functor = new FuncFunctor<T, bool>(predicat);
+            return CountOperator.CountMeta<TCollect, T, FuncFunctor<T, bool>>(ref _collect, ref functor);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long LongCount()
         {
-            return _collect.LongCountMeta<TCollect, T>();
+            return LongCountOperator.LongCountMeta<TCollect, T>(ref _collect);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long LongCount<TPredicat>(TPredicat predicat) 
             where TPredicat : struct, IFunctor<T, bool>
         {
-            return _collect.LongCountMeta<TCollect, T, TPredicat>(predicat);
+            return LongCountOperator.LongCountMeta<TCollect, T, TPredicat>(ref _collect, ref predicat);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long LongCount(Func<T, bool> predicat)
         {
-            return _collect.LongCountMeta<TCollect, T, FuncFunctor<T, bool>>(new FuncFunctor<T, bool>(predicat));
+            var functor = new FuncFunctor<T, bool>(predicat);
+            return LongCountOperator.LongCountMeta<TCollect, T, FuncFunctor<T, bool>>(ref _collect, ref functor);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual<TSecond>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return SequenceEqualOperator.SequenceEqual<TCollect, TSecond, T>(ref _collect, ref second);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual<TSecond>(TSecond second, IEqualityComparer<T> comparer) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return SequenceEqualOperator.SequenceEqual<TCollect, TSecond, T>(ref _collect, ref second, comparer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual<TSecond, TPredicat>(TSecond second, TPredicat predicat) 
+            where TSecond : struct, ICollectionWrapper<T> 
+            where TPredicat : struct, IFunctor<T, T, bool>
+        {
+            return SequenceEqualOperator.SequenceEqual<TCollect, TSecond, TPredicat, T, T>(ref _collect, ref second, ref predicat);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual<TSecond>(TSecond second, Func<T, T, bool> predicat) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            var func = new FuncFunctor<T, T, bool>(predicat);
+            return SequenceEqualOperator.SequenceEqual<TCollect, TSecond, FuncFunctor<T, T, bool>, T, T>(ref _collect, ref second, ref func);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqualEq<TSecond, T2>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T2> 
+            where T2 : IEquatable<T>
+        {
+            return SequenceEqualOperator.SequenceEqualEq<TCollect, TSecond, T, T2>(ref _collect, ref second);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqualEqBox<T2>(ICollectionWrapper<T2> second) 
+            where T2 : IEquatable<T>
+        {
+            ErrorUtil.NullCheck(second, "second");
+            return SequenceEqualOperator.SequenceEqualEq<TCollect, ICollectionWrapper<T2>, T, T2>(ref _collect, ref second);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ForEach<TAction>(TAction action) 
+            where TAction : struct, IFunctor<T, MetaVoid>
+        {
+            ForEachOperator.ForEachMeta<TCollect, TAction, T>(ref _collect, ref action);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ForEach(Action<T> action)
+        {
+            var functor = new ActionFunctor<T>(action);
+            ForEachOperator.ForEachMeta<TCollect, ActionFunctor<T>, T>(ref _collect, ref functor);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -714,6 +790,22 @@ namespace LinqMeta.CollectionWrapper
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<DistinctRestartableOperator<TCollect, T>, T> DistinctRestartable()
+        {
+            return new OperatorWrapper<DistinctRestartableOperator<TCollect, T>, T>(
+                    new DistinctRestartableOperator<TCollect, T>(ref _collect, EqualityComparer<T>.Default)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<DistinctRestartableOperator<TCollect, T>, T> DistinctRestartable(IEqualityComparer<T> comparer)
+        {
+            return new OperatorWrapper<DistinctRestartableOperator<TCollect, T>, T>(
+                    new DistinctRestartableOperator<TCollect, T>(ref _collect, comparer)
+                );
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<ExceptOperator<TCollect, TSecond, T>, T> Except<TSecond>(TSecond second) 
             where TSecond : struct, ICollectionWrapper<T>
         {
@@ -749,6 +841,24 @@ namespace LinqMeta.CollectionWrapper
                 );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<IntersectRestartableOperator<TCollect, TSecond, T>, T> IntersectRestartable<TSecond>(TSecond second) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<IntersectRestartableOperator<TCollect, TSecond, T>, T>(
+                    new IntersectRestartableOperator<TCollect, TSecond, T>(ref _collect, ref second, EqualityComparer<T>.Default)
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<IntersectRestartableOperator<TCollect, TSecond, T>, T> IntersectRestartable<TSecond>(TSecond second, IEqualityComparer<T> comparer) 
+            where TSecond : struct, ICollectionWrapper<T>
+        {
+            return new OperatorWrapper<IntersectRestartableOperator<TCollect, TSecond, T>, T>(
+                    new IntersectRestartableOperator<TCollect, TSecond, T>(ref _collect, ref second, comparer)
+                );
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public OperatorWrapper<UnionOperator<TCollect, TSecond, T>, T> Union<TSecond>(TSecond second) 
             where TSecond : struct, ICollectionWrapper<T>

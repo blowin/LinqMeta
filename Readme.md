@@ -33,8 +33,8 @@ SelectWhereIndexTakeSumLinqFaster |   914.04 us |  4.9388 us |  4.6198 us |    3
 
 Operation, like XXXDefault may replace. because XXX operators return special type Option, then may return default, value or exception
 
-| Method          | Linq | LinqMeta |
-|-----------------|------|----------|
+| Method     | Linq | LinqMeta |
+|------------|------------|----------------|
 | Select          | +    | +        |
 | SelectMany      | +    | +        |
 | Where      | +    | +        |
@@ -79,6 +79,7 @@ Operation, like XXXDefault may replace. because XXX operators return special typ
 | Take      | +    | +        |
 | TakeWhile      | +    | +        |
 | Zip      | +    | +        |
+| SequenceEqual | + | + |
 | ToArray      | +    | +        |
 | ToList      | +    | +        |
 | ToDictionary      | +    | +        |

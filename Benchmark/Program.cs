@@ -12,10 +12,9 @@ using LinqMetaCore.Intefaces;
 
 namespace Benchmark
 {
-    [MemoryDiagnoser]
     public class Operators
     {
-        private const int N = 100_000;
+        private const int N = 10000;
         //private int[] arr;
         private List<int> _list;
 
@@ -31,6 +30,8 @@ namespace Benchmark
                 _list.Add(rnd.Next(10));
             }
         }
+
+
 /*
         #region Sum
 
@@ -90,7 +91,7 @@ namespace Benchmark
 
         #endregion
  */
-       
+  /*     
         #region SelectWhereSum
 
         [Benchmark]
@@ -107,25 +108,26 @@ namespace Benchmark
         public long SelectWhereSumLinqFaster() => _list.SelectF(i => (long)i).WhereSumF(l => l % 2 == 0);
 
         #endregion
-  
-  /*      
-        #region SelectSum
-
-        [Benchmark]
-        public long SelectWhereIndexTakeSumLinq() => _list.Select(i => (long)i).TakeWhile((l, i) => i < 20_000).Take(2000).Sum();
-        
-        [Benchmark]
-        public long SelectWhereIndexTakeSumLinqMeta() => _list.MetaOperators().SelectMeta(i => (long)i).WhereIndexMeta(pair => pair.Index < 20_000).TakeMeta(2000).SumMeta();
-        
-        [Benchmark]
-        public long SelectWhereIndexTakeSumStructFunctorLinqMeta() => _list.MetaOperators().SelectMeta<IntToLong, long>(default(IntToLong))
-            .WhereIndexMeta(new TakeWhileIndexLessThan(20_000)).TakeMeta(2000).SumMeta();
-        
-        [Benchmark]
-        public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).TakeF(2000).SumF();
-
-        #endregion
   */
+       
+        #region SelectSum
+/*
+        [Benchmark]
+        public long SelectWhereIndexTakeSumLinq() => _list.Select(i => (long)i).TakeWhile((l, i) => i < 20_000).Sum();
+    */    
+        [Benchmark]
+        public long SelectWhereIndexTakeSumLinqMeta() => _list.MetaOperators().Select(i => (long)i).WhereIndex(pair => pair.Index < 20_000).Sum();
+        
+        [Benchmark]
+        public long SelectWhereIndexTakeSumStructFunctorLinqMeta() => _list.MetaOperators().Select<IntToLong, long>(default(IntToLong))
+            .WhereIndex(new TakeWhileIndexLessThan(20_000)).Sum();
+        /*
+        [Benchmark]
+        public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).SumF();
+*/
+        
+        #endregion
+  
     }
     
     public class Program

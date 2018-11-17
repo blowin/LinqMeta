@@ -9,7 +9,7 @@ namespace LinqMeta.Extensions.Operators
     public static class AllOperators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AllMeta<TCollect, TFilter, T>(this TCollect collect, TFilter filter)
+        public static bool AllMeta<TCollect, TFilter, T>(ref TCollect collect, ref TFilter filter)
             where TCollect : struct, ICollectionWrapper<T>
             where TFilter : struct, IFunctor<T, bool>
         {

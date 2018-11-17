@@ -6,7 +6,7 @@ namespace LinqMeta.Extensions.Operators
     public static class CountOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CountMeta<TCollect, T>(this TCollect collect)
+        public static int CountMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)
@@ -24,7 +24,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CountMeta<TCollect, T, TPredicat>(this TCollect collect, TPredicat predicat)
+        public static int CountMeta<TCollect, T, TPredicat>(ref TCollect collect, ref TPredicat predicat)
             where TCollect : struct, ICollectionWrapper<T>
             where TPredicat : struct, IFunctor<T, bool>
         {

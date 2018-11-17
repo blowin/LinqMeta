@@ -7,7 +7,7 @@ using LinqMetaCore.Intefaces;
 namespace LinqMeta.Operators.CollectOperator
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct IntersectOperator<TCollect, TSecondCollect, T> : ICollectionWrapper<T>
+    public struct IntersectRestartableOperator<TCollect, TSecondCollect, T> : ICollectionWrapper<T>
         where TCollect : struct, ICollectionWrapper<T>
         where TSecondCollect : struct, ICollectionWrapper<T>
     {
@@ -44,8 +44,11 @@ namespace LinqMeta.Operators.CollectOperator
                         if (_intersectCollect.Remove(_item))
                             return true;
                     }
+
+                    _index = -1;
                 }
                 
+                FillIntersectCollect();
                 return false;
             }
         }
@@ -65,23 +68,37 @@ namespace LinqMeta.Operators.CollectOperator
             get { return default(T); }
         }
 
-        public IntersectOperator(ref TCollect collect, ref TSecondCollect secondCollect, IEqualityComparer<T> comparer)
+        public IntersectRestartableOperator(ref TCollect collect, ref TSecondCollect secondCollect, IEqualityComparer<T> comparer)
         {
             _collect = collect;
             _secondCollect = secondCollect;
             _item = default(T);
             _index = -1;
             _intersectCollect = new HashSet<T>(comparer);
-            if (_collect.HasIndexOverhead)
+            FillIntersectCollect();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void FillIntersectCollect()
+        {
+            try
             {
-                while (_collect.HasNext)
-                    _intersectCollect.Add(_collect.Value);
+                if (_collect.HasIndexOverhead)
+                {
+                    while (_collect.HasNext)
+                        _intersectCollect.Add(_collect.Value);
+                }
+                else
+                {
+                    var size = _collect.Size;
+                    for (var i = 0u; i < size; ++i)
+                        _intersectCollect.Add(_collect[i]);
+                }
             }
-            else
+            catch (Exception e)
             {
-                var size = _collect.Size;
-                for (var i = 0u; i < size; ++i)
-                    _intersectCollect.Add(_collect[i]);
+                // Can throw Exception. then collect is range. for example
+                // ignored
             }
         }
     }

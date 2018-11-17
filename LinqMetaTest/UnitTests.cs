@@ -426,5 +426,84 @@ namespace LinqMetaTest
                 .ToArray();
             Assert.Equal(linq, metaLinq);
         }
+
+        [Fact]
+        public void SequenceEqual()
+        {
+            var linq = arr.SequenceEqual(arr);
+            var meta = arr.MetaOperators().SequenceEqual(arr.MetaWrapper());
+            Assert.Equal(linq, meta);
+
+            linq = arr.SequenceEqual(arr.TakeWhile(i => i < 4));
+            meta = arr.MetaOperators().SequenceEqual(arr.MetaOperators().TakeWhile(i => i < 4).Collect);
+            Assert.Equal(linq, meta);
+            
+            linq = arr.SequenceEqual(arr.Take(3));
+            meta = arr.MetaOperators().SequenceEqual(arr.MetaOperators().Take(3).Collect);
+            Assert.Equal(linq, meta);
+            
+            linq = new []{2, 4}.SequenceEqual(Enumerable.Range(0, 5).Where(i => i % 2 == 0));
+            meta = new []{2, 4}.MetaOperators().SequenceEqual(Enumerable.Range(0, 5).MetaOperators().Where(i => i % 2 == 0).Collect);
+            Assert.Equal(linq, meta);
+            
+            linq = Enumerable.Range(0, 5).Where(i => i % 2 == 0).SequenceEqual(new []{2, 4});
+            meta = Enumerable.Range(0, 5).MetaOperators().Where(i => i % 2 == 0).SequenceEqual(new []{2, 4}.MetaWrapper());
+            Assert.Equal(linq, meta);
+
+            linq = arr.Where(i => !i.In(1, 4, 6, 8 ,9)).SequenceEqual(arr.Where(i => !i.In(1, 4, 6, 8 ,9)));
+            meta = arr.MetaOperators().Where(i => !i.In(1, 4, 6, 8 ,9)).SequenceEqual(arr.MetaOperators().Where(i => !i.In(1, 4, 6, 8 ,9)).Collect);
+            Assert.Equal(linq, meta);
+        }
+
+        [Fact]
+        public void ForEach()
+        {
+            var linqForEachSum = 0;
+            foreach (var i in arr)
+                linqForEachSum += i;
+
+            var metaForEachSum = 0;
+            arr.MetaOperators().ForEach(i => metaForEachSum += i);
+            
+            Assert.Equal(linqForEachSum, metaForEachSum);
+
+            metaForEachSum = 0;
+            var iter = arr.MetaOperators().BuildEnumerator();
+            while (iter.MoveNext())
+                metaForEachSum += iter.Current;
+            
+            Assert.Equal(linqForEachSum, metaForEachSum);
+        }
+
+        [Fact]
+        public void LoopUnrol()
+        {
+            var sumSimple = 0;
+            for (var i = 0; i < arr.Length; ++i)
+            {
+                sumSimple += arr[i];
+            }
+
+            const int step = 4;
+            var sum1 = 0;
+            var sum2 = 0;
+            var sum3 = 0;
+            var sum4 = 0;
+            var headSize = (arr.Length / step) * step;
+            for (var i = 0; i < headSize; i += step)
+            {
+                sum1 += arr[i];
+                sum2 += arr[i + 1];
+                sum3 += arr[i + 2];
+                sum4 += arr[i + 3];
+            }
+
+            for (var i = headSize; i < arr.Length; ++i)
+            {
+                sum1 += arr[i];
+            }
+            
+            Assert.Equal(sumSimple, sum1 + sum2 + sum3 + sum4);
+        }
     }
 }

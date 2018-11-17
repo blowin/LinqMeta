@@ -6,7 +6,7 @@ namespace LinqMeta.Extensions.Operators
     public static class LongCountOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long LongCountMeta<TCollect, T>(this TCollect collect)
+        public static long LongCountMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)
@@ -24,7 +24,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long LongCountMeta<TCollect, T, TPredicat>(this TCollect collect, TPredicat predicat)
+        public static long LongCountMeta<TCollect, T, TPredicat>(ref TCollect collect, ref TPredicat predicat)
             where TCollect : struct, ICollectionWrapper<T>
             where TPredicat : struct, IFunctor<T, bool>
         {

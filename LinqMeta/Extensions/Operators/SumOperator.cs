@@ -7,7 +7,7 @@ namespace LinqMeta.Extensions.Operators
     public static class SumOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T SumMeta<TCollect, T>(this TCollect collect)
+        public static T SumMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             var sum = default(T);

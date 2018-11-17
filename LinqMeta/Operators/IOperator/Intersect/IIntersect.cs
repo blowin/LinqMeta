@@ -3,7 +3,7 @@ using LinqMeta.CollectionWrapper;
 using LinqMeta.Operators.CollectOperator;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.Operators.IOperator
+namespace LinqMeta.Operators.IOperator.Intersect
 {
     public interface IIntersect<TCollect, T>
         where TCollect : struct, ICollectionWrapper<T>

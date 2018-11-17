@@ -8,7 +8,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class StatisticOperator
     {
-        public static StatisticInfo<T>? GetStatisticMeta<TCollect, T>(this TCollect collect, StatisticValue value)
+        public static StatisticInfo<T>? GetStatisticMeta<TCollect, T>(ref TCollect collect, StatisticValue value)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)

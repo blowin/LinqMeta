@@ -7,7 +7,7 @@ namespace LinqMeta.Extensions.Operators
     public static class ContainsOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ContainsMeta<TCollect, T>(this TCollect collect, T val)
+        public static bool ContainsMeta<TCollect, T>(ref TCollect collect, T val)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)
@@ -32,7 +32,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ContainsEqMeta<TCollect, T, T2>(this TCollect collect, T2 val)
+        public static bool ContainsEqMeta<TCollect, T, T2>(ref TCollect collect, T2 val)
             where TCollect : struct, ICollectionWrapper<T>
             where T2 : IEquatable<T>
         {
@@ -58,7 +58,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ContainsMeta<TCollect, T, TPredicat>(this TCollect collect, TPredicat predicat)
+        public static bool ContainsMeta<TCollect, T, TPredicat>(ref TCollect collect, ref TPredicat predicat)
             where TCollect : struct, ICollectionWrapper<T>
             where TPredicat : struct, IFunctor<T, bool>
         {
@@ -84,7 +84,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ContainsMeta<TCollect, T, TPredicat, T2>(this TCollect collect, TPredicat predicat, T2 val)
+        public static bool ContainsMeta<TCollect, T, TPredicat, T2>(ref TCollect collect, ref TPredicat predicat, T2 val)
             where TCollect : struct, ICollectionWrapper<T>
             where TPredicat : struct, IFunctor<T, T2, bool>
         {

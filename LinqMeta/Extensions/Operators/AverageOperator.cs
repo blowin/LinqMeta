@@ -6,7 +6,7 @@ namespace LinqMeta.Extensions.Operators
 {
     public static class AverageOperator
     {
-        public static double Average<TCollect, T>(this TCollect collect)
+        public static double Average<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             long number = 0;
@@ -38,7 +38,7 @@ namespace LinqMeta.Extensions.Operators
             return number > 0 ? NumberOperators<T>.DivDouble(sum, number) : 0;
         }
         
-        public static Decimal AverageDec<TCollect, T>(this TCollect collect)
+        public static Decimal AverageDec<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             long number = 0;

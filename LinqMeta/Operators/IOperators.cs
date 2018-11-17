@@ -6,8 +6,10 @@ using LinqMeta.Operators.IOperator.Select;
 using LinqMeta.Operators.IOperator.ConvertToCollect;
 using LinqMeta.Operators.IOperator.Count;
 using LinqMeta.Operators.IOperator.DefaultIfEmpty;
+using LinqMeta.Operators.IOperator.Distinct;
 using LinqMeta.Operators.IOperator.ElementAt;
 using LinqMeta.Operators.IOperator.First;
+using LinqMeta.Operators.IOperator.Intersect;
 using LinqMeta.Operators.IOperator.Last;
 using LinqMeta.Operators.IOperator.MaxMin;
 using LinqMetaCore.Intefaces;
@@ -34,6 +36,8 @@ namespace LinqMeta.Operators
         IContain<T>,
         ICount<T>,
         ILongCount<T>,
+        ISequenceEqual<T>,
+        IForEach<T>,
 
         ICast<TCollect, T>,
         IUnsafeCast<TCollect, T>,
@@ -55,8 +59,10 @@ namespace LinqMeta.Operators
         ILazyDefaultIfEmpty<TCollect, T>,
         IReverse<TCollect, T>,
         IDistinct<TCollect, T>,
+        IDistinctRestartable<TCollect, T>,
         IExcept<TCollect, T>,
         IIntersect<TCollect, T>,
+        IIntersectRestartable<TCollect, T>,
         IUnion<TCollect, T>,
 
         IToArray<T>,

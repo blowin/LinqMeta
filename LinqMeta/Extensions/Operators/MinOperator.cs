@@ -7,19 +7,20 @@ namespace LinqMeta.Extensions.Operators
     public static class MinOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static T MinMeta<TCollect, TComparer, T>(this TCollect collect, TComparer firstLess)
+        internal static T MinMeta<TCollect, TComparer, T>(ref TCollect collect, ref TComparer firstLess)
             where TCollect : struct, ICollectionWrapper<T>
             where TComparer : struct, IFunctor<T, T, bool>
         {
-            return collect.FindElementInAllCollection<TCollect, TComparer, T>(firstLess);
+            return FindOperator.FindElementInAllCollection<TCollect, TComparer, T>(ref collect, ref firstLess);
         }
         
         // For number collection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T MinMeta<TCollect, T>(this TCollect collect)
+        public static T MinMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return MinMeta<TCollect, LessThanOperator<T>, T>(collect, default(LessThanOperator<T>));
+            var lessThan = default(LessThanOperator<T>);
+            return MinMeta<TCollect, LessThanOperator<T>, T>(ref collect, ref lessThan);
         }
     }
 }

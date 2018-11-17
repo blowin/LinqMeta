@@ -8,7 +8,7 @@ namespace LinqMeta.Extensions.Operators
     public static class FirstLastOperators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Option<T> FirstMeta<TCollect, T>(this TCollect collect)
+        public static Option<T> FirstMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)
@@ -22,7 +22,7 @@ namespace LinqMeta.Extensions.Operators
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Option<T> LastMeta<TCollect, T>(this TCollect collect)
+        public static Option<T> LastMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)
@@ -47,7 +47,7 @@ namespace LinqMeta.Extensions.Operators
             }
         }
         
-        public static LinqMetaCore.Option<T> NthMeta<TCollect, T>(this TCollect collect, uint index)
+        public static LinqMetaCore.Option<T> NthMeta<TCollect, T>(ref TCollect collect, uint index)
             where TCollect : struct, ICollectionWrapper<T>
         {
             if (collect.HasIndexOverhead)

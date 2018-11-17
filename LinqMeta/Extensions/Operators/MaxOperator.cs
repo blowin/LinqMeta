@@ -9,18 +9,19 @@ namespace LinqMeta.Extensions.Operators
     public static class MaxOperator
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T MaxMeta<TCollect, TComparer, T>(this TCollect collect, TComparer firstGreat)
+        public static T MaxMeta<TCollect, TComparer, T>(ref TCollect collect, ref TComparer firstGreat)
             where TCollect : struct, ICollectionWrapper<T>
             where TComparer : struct, IFunctor<T, T, bool>
         {
-            return collect.FindElementInAllCollection<TCollect, TComparer, T>(firstGreat);
+            return FindOperator.FindElementInAllCollection<TCollect, TComparer, T>(ref collect, ref firstGreat);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T MaxMeta<TCollect, T>(ref TCollect collect, Func<T, T, bool> firstGreat)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return MaxMeta<TCollect, FuncFunctor<T, T, bool>, T>(collect, new FuncFunctor<T, T, bool>(firstGreat));
+            var func = new FuncFunctor<T, T, bool>(firstGreat);
+            return MaxOperator.MaxMeta<TCollect, FuncFunctor<T, T, bool>, T>(ref collect, ref func);
         }
         
         // For number collection
@@ -28,7 +29,8 @@ namespace LinqMeta.Extensions.Operators
         public static T MaxMeta<TCollect, T>(ref TCollect collect)
             where TCollect : struct, ICollectionWrapper<T>
         {
-            return MaxMeta<TCollect, GreaterThan<T>, T>(collect, default(GreaterThan<T>));
+            var greatThan = default(GreaterThan<T>);
+            return MaxMeta<TCollect, GreaterThan<T>, T>(ref collect, ref greatThan);
         }
     }
 }
