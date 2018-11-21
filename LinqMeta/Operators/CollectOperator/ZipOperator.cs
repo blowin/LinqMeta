@@ -93,8 +93,8 @@ namespace LinqMeta.Operators.CollectOperator
         {
             _firstCollection = firstCollection;
             _secondCollection = secondCollection;
-            var wrapSecond = new StructMaybeBoxCollectionWrapper<TSecondCollection, T2>(secondCollection);
-            _stateInfo = StateInfo.Create<TFirstCollection, StructMaybeBoxCollectionWrapper<TSecondCollection, T2>, T, T2>(ref firstCollection, ref wrapSecond);
+            
+            _stateInfo = StateInfo.Create<TFirstCollection, TSecondCollection, T, T2>(ref firstCollection, ref secondCollection);
             _stateInfo.IteratePack.Size = Math.Min(_stateInfo.IteratePack.Size, _secondCollection.Size);
             _item = default(Pair<T, T2>);
         }

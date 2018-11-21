@@ -43,6 +43,31 @@ namespace LinqMeta.DataTypes.Buffers
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveAt(uint index)
+        {
+            if(_size <= 0)
+                return;
+            
+            --_size;
+            Array.Copy(_buff, (int) (index + 1), _buff, (int) index, (int) (_size - index));
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Remove(T item)
+        {
+            if(_size <= 0)
+                return false;
+            
+            var index = Array.IndexOf(_buff, item, 0, (int)_size);
+            if (index == -1)
+                return false;
+            
+            --_size;
+            Array.Copy(_buff, index + 1, _buff, index, (int) (_size - index));
+            return true;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray()
         {
             if (_size != (uint)_buff.Length && _size > 0)

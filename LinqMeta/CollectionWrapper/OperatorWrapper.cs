@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper.EnumeratorWrapper;
+using LinqMeta.DataTypes;
+using LinqMeta.DataTypes.SetMeta;
 using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Extensions.Converters;
 using LinqMeta.Extensions.Operators;
@@ -877,6 +879,172 @@ namespace LinqMeta.CollectionWrapper
                 );
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>, TRes> Join<TCollect2, T2, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>(TCollect2 collect2,
+            TSelector selector, TSelector2 selector2, TSelectorRes selectorRes, TComparer comparer) 
+            where TCollect2 : ICollectionWrapper<T2> 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelector2 : struct, IFunctor<T2, TKey> 
+            where TSelectorRes : struct, IFunctor<Pair<T, T2>, TRes> 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>(
+                            ref _collect, ref collect2, ref selector, ref selector2, ref selectorRes, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, TRes> Join<TCollect2, T2, TSelector, TSelector2, TSelectorRes, TKey, TRes>(TCollect2 collect2,
+            TSelector selector, TSelector2 selector2, TSelectorRes selectorRes) 
+            where TCollect2 : ICollectionWrapper<T2> 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelector2 : struct, IFunctor<T2, TKey> 
+            where TSelectorRes : struct, IFunctor<Pair<T, T2>, TRes>
+        {
+            var hashComparer = default(CompareHashSetHelper<TKey>);
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T2, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>(
+                            ref _collect, ref collect2, ref selector, ref selector2, ref selectorRes, ref hashComparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>, TRes> JoinSameType<TCollect2, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>(TCollect2 collect2,
+            TSelector selector, TSelector2 selector2, TSelectorRes selectorRes, TComparer comparer) 
+            where TCollect2 : ICollectionWrapper<T> 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelector2 : struct, IFunctor<T, TKey> 
+            where TSelectorRes : struct, IFunctor<Pair<T, T>, TRes> 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, TComparer, TKey, TRes>(
+                            ref _collect, ref collect2, ref selector, ref selector2, ref selectorRes, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, TRes> JoinSameType<TCollect2, TSelector, TSelector2, TSelectorRes, TKey, TRes>(TCollect2 collect2,
+            TSelector selector, TSelector2 selector2, TSelectorRes selectorRes) 
+            where TCollect2 : ICollectionWrapper<T> 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelector2 : struct, IFunctor<T, TKey> 
+            where TSelectorRes : struct, IFunctor<Pair<T, T>, TRes>
+        {
+            var hashComparer = default(CompareHashSetHelper<TKey>);
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T, TSelector, TSelector2, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>(
+                            ref _collect, ref collect2, ref selector, ref selector2, ref selectorRes, ref hashComparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>, TRes> 
+            Join<TCollect2, T2, TKey, TRes>(TCollect2 collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes,
+            IEqualityComparer<TKey> comparer) 
+            where TCollect2 : ICollectionWrapper<T2>
+        {
+            ErrorUtil.NullCheck(comparer, "comparer");
+            var funSelector = new FuncFunctor<T, TKey>(selector);
+            var funcSelector2 = new FuncFunctor<T2, TKey>(selector2);
+            var selectorResFunctor = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>(
+                            ref _collect, ref collect2, ref funSelector, ref funcSelector2, ref selectorResFunctor, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TComparer, TKey, TRes>, TRes> 
+            Join<TCollect2, T2, TComparer, TKey, TRes>(TCollect2 collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes, TComparer comparer) 
+            where TCollect2 : ICollectionWrapper<T2> 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            var selectorFun = new FuncFunctor<T, TKey>(selector);
+            var selectorFun2 = new FuncFunctor<T2, TKey>(selector2);
+            var selectorResFun = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TComparer, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TComparer, TKey, TRes>(
+                            ref _collect, ref collect2, ref selectorFun, ref selectorFun2, ref selectorResFun, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, TRes> 
+            Join<TCollect2, T2, TKey, TRes>(TCollect2 collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes) 
+            where TCollect2 : ICollectionWrapper<T2>
+        {
+            var funSelector = new FuncFunctor<T, TKey>(selector);
+            var funSelector2 = new FuncFunctor<T2, TKey>(selector2);
+            var funResSelector = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            var hashComparer = default(CompareHashSetHelper<TKey>);
+            
+            return new OperatorWrapper<JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, TCollect2, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>(
+                            ref _collect, ref collect2, ref funSelector, ref funSelector2, ref funResSelector, ref hashComparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>, TRes> 
+            JoinBox<T2, TKey, TRes>(ICollectionWrapper<T2> collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes, IEqualityComparer<TKey> comparer)
+        {
+            ErrorUtil.NullCheck(collect2, "collect2");
+            ErrorUtil.NullCheck(comparer, "comparer");
+            var selectFun = new FuncFunctor<T, TKey>(selector);
+            var selectFun2 = new FuncFunctor<T2, TKey>(selector2);
+            var selectResFun = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            
+            return new OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, IEqualityComparer<TKey>, TKey, TRes>(
+                            ref _collect, ref collect2, ref selectFun, ref selectFun2, ref selectResFun, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TCompare, TKey, TRes>, TRes> 
+            JoinBox<T2, TCompare, TKey, TRes>(ICollectionWrapper<T2> collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes, TCompare comparer) 
+            where TCompare : IEqualityComparer<TKey>
+        {
+            ErrorUtil.NullCheck(collect2, "collect2");
+            var selectFun = new FuncFunctor<T, TKey>(selector);
+            var selectFun2 = new FuncFunctor<T2, TKey>(selector2);
+            var selectResFun = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            
+            return new OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TCompare, TKey, TRes>, TRes>(
+                    new JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, TCompare, TKey, TRes>(
+                            ref _collect, ref collect2, ref selectFun, ref selectFun2, ref selectResFun, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, TRes> 
+            JoinBox<T2, TKey, TRes>(ICollectionWrapper<T2> collect2, Func<T, TKey> selector, Func<T2, TKey> selector2, Func<Pair<T, T2>, TRes> selectorRes)
+        {
+            ErrorUtil.NullCheck(collect2, "collect2");
+            var selectFun = new FuncFunctor<T, TKey>(selector);
+            var selectFun2 = new FuncFunctor<T2, TKey>(selector2);
+            var selectResFun = new FuncFunctor<Pair<T, T2>, TRes>(selectorRes);
+            var comparer = default(CompareHashSetHelper<TKey>);
+            
+            return new OperatorWrapper<JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, TRes>(
+                new JoinOperator<TCollect, T, ICollectionWrapper<T2>, T2, FuncFunctor<T, TKey>, FuncFunctor<T2, TKey>, FuncFunctor<Pair<T, T2>, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>(
+                    ref _collect, ref collect2, ref selectFun, ref selectFun2, ref selectResFun, ref comparer
+                )
+            );
+        }
+        
         public CollectEnumeratorWrapper<TCollect, T> BuildEnumerator()
         {
             return new CollectEnumeratorWrapper<TCollect, T>(_collect);
@@ -888,7 +1056,9 @@ namespace LinqMeta.CollectionWrapper
                 ? (IEnumerator<T>) new CollectOverheadEnumeratorWrapper<TCollect, T>(_collect)
                 : new CollectIndexEnumeratorWrapper<TCollect, T>(_collect);
         }
-        
+
+        #region To Another collect
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray(uint? capacity = null)
         {
@@ -995,5 +1165,7 @@ namespace LinqMeta.CollectionWrapper
                     ref _collect, keySelector, elementSelector, comparer, capacity
                 );
         }
+
+        #endregion
     }
 }

@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using JM.LinqFaster;
+using LinqMeta.DataTypes;
+using LinqMeta.DataTypes.SetMeta;
 using LinqMeta.Extensions;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
 namespace Benchmark
 {
+    [MemoryDiagnoser]
     public class Operators
     {
-        private const int N = 10000;
+        private const int N = 10_000;
         //private int[] arr;
         private List<int> _list;
-
+        
         public Operators()
-        {
+        {   
             var rnd = new Random(1100);
             
            // arr = new int[N];
@@ -27,7 +31,8 @@ namespace Benchmark
             for (var i = 0; i < N; i++)
             {
                 //arr[i] = rnd.Next(2);
-                _list.Add(rnd.Next(10));
+                var item = rnd.Next(10);
+                _list.Add(item);
             }
         }
 
@@ -114,20 +119,19 @@ namespace Benchmark
 /*
         [Benchmark]
         public long SelectWhereIndexTakeSumLinq() => _list.Select(i => (long)i).TakeWhile((l, i) => i < 20_000).Sum();
-    */    
+       
         [Benchmark]
         public long SelectWhereIndexTakeSumLinqMeta() => _list.MetaOperators().Select(i => (long)i).WhereIndex(pair => pair.Index < 20_000).Sum();
         
         [Benchmark]
         public long SelectWhereIndexTakeSumStructFunctorLinqMeta() => _list.MetaOperators().Select<IntToLong, long>(default(IntToLong))
             .WhereIndex(new TakeWhileIndexLessThan(20_000)).Sum();
-        /*
+        
         [Benchmark]
         public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).SumF();
 */
         
         #endregion
-  
     }
     
     public class Program

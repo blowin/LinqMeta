@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using LinqMeta.DataTypes;
 
 namespace LinqMeta.Operators.Number
 {
@@ -50,7 +51,7 @@ namespace LinqMeta.Operators.Number
             }
             else
             {
-                throw new NotSupportedException("Nope");
+                return ComparerCash<T>.Value.Equals(a, b);
             }
         }
     }

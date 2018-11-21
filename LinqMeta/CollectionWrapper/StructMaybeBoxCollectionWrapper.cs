@@ -38,7 +38,7 @@ namespace LinqMeta.CollectionWrapper
             get { return _collect[index]; }   
         }
 
-        public StructMaybeBoxCollectionWrapper(TCollect collect)
+        public StructMaybeBoxCollectionWrapper(ref TCollect collect)
         {
             _collect = collect;
         }

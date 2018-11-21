@@ -6,6 +6,7 @@ namespace LinqMeta.Extensions.Converters
 {
     public static class ToArrayOperators
     {
+        // TODO CREATE ADAPTER FOR CREATE COLLECT
         public static T[] ToMetaArray<TCollect, T>(ref TCollect collect, uint? capacity = null)
             where TCollect : struct, ICollectionWrapper<T>
         {

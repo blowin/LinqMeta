@@ -15,15 +15,15 @@ namespace LinqMeta.DataTypes
         }
         
         public static StateInfo Create<TFirst, TSecond, T>(ref TFirst first, ref TSecond second) 
-            where TFirst : struct, ICollectionWrapper<T>
-            where TSecond : struct, ICollectionWrapper<T>
+            where TFirst : ICollectionWrapper<T>
+            where TSecond : ICollectionWrapper<T>
         {
             return Create<TFirst, TSecond, T, T>(ref first, ref second);
         }
         
         public static StateInfo Create<TFirst, TSecond, T1, T2>(ref TFirst first, ref TSecond second) 
-            where TFirst : struct, ICollectionWrapper<T1>
-            where TSecond : struct, ICollectionWrapper<T2>
+            where TFirst : ICollectionWrapper<T1>
+            where TSecond : ICollectionWrapper<T2>
         {
             var stateInfo = new StateInfo
             {

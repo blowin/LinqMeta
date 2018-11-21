@@ -68,10 +68,7 @@ namespace LinqMeta.Extensions.Operators
             where TSecond : ICollectionWrapper<T2>
             where TPredicat : struct, IFunctor<T, T2, bool>
         {
-            var wrap = new StructMaybeBoxCollectionWrapper<TSecond, T2>(second);
-            var typeIter = TypeIterateHelpers.GetTypeIterate<TCollect, StructMaybeBoxCollectionWrapper<TSecond, T2>, T, T2>(ref collect, ref wrap);
-            
-            switch (typeIter)
+            switch (TypeIterateHelpers.GetTypeIterate<TCollect, TSecond, T, T2>(ref collect, ref second))
             {
                 case TypeIterate.FirstHasOverHeadSecondHasOverhead:
                     while (collect.HasNext)

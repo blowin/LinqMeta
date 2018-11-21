@@ -46,7 +46,7 @@ namespace LinqMeta.Operators.Number
             }
             else if (typeof(T) == typeof(Double))
             {
-                return ((decimal) (object) a / b);
+                return ((decimal) (Double) (object) a / b);
             }
             else
             {

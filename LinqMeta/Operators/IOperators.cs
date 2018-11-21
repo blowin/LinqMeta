@@ -64,6 +64,7 @@ namespace LinqMeta.Operators
         IIntersect<TCollect, T>,
         IIntersectRestartable<TCollect, T>,
         IUnion<TCollect, T>,
+        IJoin<TCollect, T>,
 
         IToArray<T>,
         IToList<T>,

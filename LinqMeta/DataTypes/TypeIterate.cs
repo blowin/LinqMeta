@@ -21,15 +21,15 @@ namespace LinqMeta.DataTypes
     internal static class TypeIterateHelpers
     {
         public static TypeIterate GetTypeIterate<TFirst, TSecond, T>(ref TFirst first, ref TSecond second)
-            where TFirst : struct, ICollectionWrapper<T>
-            where TSecond : struct, ICollectionWrapper<T>
+            where TFirst : ICollectionWrapper<T>
+            where TSecond : ICollectionWrapper<T>
         {
             return GetTypeIterate<TFirst, TSecond, T, T>(ref first, ref second);
         }
         
         public static TypeIterate GetTypeIterate<TFirst, TSecond, T, T2>(ref TFirst first, ref TSecond second)
-            where TFirst : struct, ICollectionWrapper<T>
-            where TSecond : struct, ICollectionWrapper<T2>
+            where TFirst : ICollectionWrapper<T>
+            where TSecond : ICollectionWrapper<T2>
         {
             var typeIterate = first.HasIndexOverhead
                 ? TypeIterate.FirstHasOverhead
