@@ -51,8 +51,17 @@ namespace LinqMeta.Operators.CollectOperator
                                     collectValue,
                                     new GroupingArray<T2>(buff.RawArray(), (int) buff.Size))
                             );
-                            return true;
                         }
+                        else
+                        {
+                            _item = _resSelector.Invoke(
+                                new Pair<T, GroupingArray<T2>>(
+                                    collectValue,
+                                    new GroupingArray<T2>(null, 0)
+                                )
+                            );
+                        }
+                        return true;
                     }
                 }
                 else
@@ -69,8 +78,18 @@ namespace LinqMeta.Operators.CollectOperator
                                     collectValue,
                                     new GroupingArray<T2>(buff.RawArray(), (int) buff.Size))
                             );
-                            return true;
                         }
+                        else
+                        {
+                            _item = _resSelector.Invoke(
+                                new Pair<T, GroupingArray<T2>>(
+                                    collectValue,
+                                    new GroupingArray<T2>(null, 0)
+                                )
+                            );
+                        }
+                        
+                        return true;
                     }
                 }
 

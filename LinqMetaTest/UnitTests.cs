@@ -526,6 +526,7 @@ namespace LinqMetaTest
             Assert.Equal(linq, meta);
         }
         
+        [Fact]
         public void GroupJoinFirstHasOverhead()
         {
             var employees = Employee.GetEmployeesArrayList();
@@ -558,14 +559,18 @@ namespace LinqMetaTest
             Assert.Equal(linq, meta);
         }
         
+        [Fact]
         public void GroupJoinSecondHasOverhead()
         {
             var employees = Employee.GetEmployeesArrayList();
             var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
 
+            var f = empOptions.Where((entry, i) => i % 2 == 0).ToArray();
+            
+            
             var linq = employees
                 .GroupJoin(
-                    empOptions.Where((employee, i) => i % 2 == 0),
+                    f,
                     e => e.id,
                     o => o.id,
                     (e, os) => new
@@ -577,7 +582,7 @@ namespace LinqMetaTest
 
             var meta = employees.MetaOperators()
                 .GroupJoinBox(
-                    empOptions.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0).Collect,
+                    f.MetaWrapper(),
                     e => e.id,
                     o => o.id,
                     pair => new
@@ -590,6 +595,7 @@ namespace LinqMetaTest
             Assert.Equal(linq, meta);
         }
         
+        [Fact]
         public void GroupJoinHasOverhead()
         {
             var employees = Employee.GetEmployeesArrayList();
