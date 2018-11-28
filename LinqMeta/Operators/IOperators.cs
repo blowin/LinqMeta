@@ -65,6 +65,7 @@ namespace LinqMeta.Operators
         IIntersectRestartable<TCollect, T>,
         IUnion<TCollect, T>,
         IJoin<TCollect, T>,
+        IGroupJoin<TCollect, T>,
 
         IToArray<T>,
         IToList<T>,
@@ -72,9 +73,7 @@ namespace LinqMeta.Operators
         IToLinkedList<T>,
         IToQueue<T>,
         IToStack<T>,
-        IToDictionary<T>,
-
-        IBuildEnumerator<TCollect, T>
+        IToDictionary<T>
         
         where TCollect : struct, ICollectionWrapper<T>
     {

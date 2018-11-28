@@ -465,9 +465,8 @@ namespace LinqMetaTest
             Assert.Equal(linqForEachSum, metaForEachSum);
 
             metaForEachSum = 0;
-            var iter = arr.MetaOperators().BuildEnumerator();
-            while (iter.MoveNext())
-                metaForEachSum += iter.Current;
+            foreach (var item in arr.MetaOperators())
+                metaForEachSum += item;
 
             Assert.Equal(linqForEachSum, metaForEachSum);
         }
@@ -487,9 +486,138 @@ namespace LinqMetaTest
         [Fact]
         public void JoinFirstHasOverhead()
         {
-            var linq = arr.Where((i, i1) => i1 % 2 == 0).Join(arr, i => i, i => i, (i, i1) => i + i1, default(IntComparer)).Sum();
+            var linq = arr.Where((i, i1) => i1 % 2 == 0).Join(arr, i => i, i => i, (i, i1) => i + i1).Sum();
             var meta = arr.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0)
-                .JoinBox(arr.MetaWrapper(), i => i, i => i, pair => pair.First + pair.Second, default(IntComparer)).Sum();
+                .JoinBox(arr.MetaWrapper(), i => i, i => i, pair => pair.First + pair.Second).Sum();
+            
+            Assert.Equal(linq, meta);
+        }
+
+        [Fact]
+        public void GroupJoin()
+        {
+            var employees = Employee.GetEmployeesArrayList();
+            var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
+
+            var linq = employees
+                .GroupJoin(
+                    empOptions,
+                    e => e.id,
+                    o => o.id,
+                    (e, os) => new
+                    {
+                        id = e.id,
+                        name = $"{e.firstName} {e.lastName}",
+                        options = os.Sum(o => o.optionsCount)
+                    }).ToArray();
+
+            var meta = employees.MetaOperators()
+                .GroupJoinBox(
+                    empOptions.MetaWrapper(),
+                    e => e.id,
+                    o => o.id,
+                    pair => new
+                    {
+                        id = pair.First.id,
+                        name = $"{pair.First.firstName} {pair.First.lastName}",
+                        options = pair.Second.MetaOperators().Select(o => o.optionsCount).Sum()
+                    }).ToArray();
+            
+            Assert.Equal(linq, meta);
+        }
+        
+        public void GroupJoinFirstHasOverhead()
+        {
+            var employees = Employee.GetEmployeesArrayList();
+            var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
+
+            var linq = employees.Where((employee, i) => i % 2 == 0)
+                .GroupJoin(
+                    empOptions,
+                    e => e.id,
+                    o => o.id,
+                    (e, os) => new
+                    {
+                        id = e.id,
+                        name = $"{e.firstName} {e.lastName}",
+                        options = os.Sum(o => o.optionsCount)
+                    }).ToArray();
+
+            var meta = employees.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0)
+                .GroupJoinBox(
+                    empOptions.MetaWrapper(),
+                    e => e.id,
+                    o => o.id,
+                    pair => new
+                    {
+                        id = pair.First.id,
+                        name = $"{pair.First.firstName} {pair.First.lastName}",
+                        options = pair.Second.MetaOperators().Select(o => o.optionsCount).Sum()
+                    }).ToArray();
+            
+            Assert.Equal(linq, meta);
+        }
+        
+        public void GroupJoinSecondHasOverhead()
+        {
+            var employees = Employee.GetEmployeesArrayList();
+            var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
+
+            var linq = employees
+                .GroupJoin(
+                    empOptions.Where((employee, i) => i % 2 == 0),
+                    e => e.id,
+                    o => o.id,
+                    (e, os) => new
+                    {
+                        id = e.id,
+                        name = $"{e.firstName} {e.lastName}",
+                        options = os.Sum(o => o.optionsCount)
+                    }).ToArray();
+
+            var meta = employees.MetaOperators()
+                .GroupJoinBox(
+                    empOptions.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0).Collect,
+                    e => e.id,
+                    o => o.id,
+                    pair => new
+                    {
+                        id = pair.First.id,
+                        name = $"{pair.First.firstName} {pair.First.lastName}",
+                        options = pair.Second.MetaOperators().Select(o => o.optionsCount).Sum()
+                    }).ToArray();
+            
+            Assert.Equal(linq, meta);
+        }
+        
+        public void GroupJoinHasOverhead()
+        {
+            var employees = Employee.GetEmployeesArrayList();
+            var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
+
+            var linq = employees.Where((employee, i) => i % 2 == 0)
+                .GroupJoin(
+                    empOptions.Where((employee, i) => i % 2 == 0),
+                    e => e.id,
+                    o => o.id,
+                    (e, os) => new
+                    {
+                        id = e.id,
+                        name = $"{e.firstName} {e.lastName}",
+                        options = os.Sum(o => o.optionsCount)
+                    }).ToArray();
+
+            var meta = employees.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0)
+                .GroupJoinBox(
+                    empOptions.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0).Collect,
+                    e => e.id,
+                    o => o.id,
+                    pair => new
+                    {
+                        id = pair.First.id,
+                        name = $"{pair.First.firstName} {pair.First.lastName}",
+                        options = pair.Second.MetaOperators().Select(o => o.optionsCount).Sum()
+                    }).ToArray();
             
             Assert.Equal(linq, meta);
         }
@@ -506,6 +634,78 @@ namespace LinqMetaTest
             public int GetHashCode(int obj)
             {
                 return obj.GetHashCode();
+            }
+        }
+        
+        public class Employee
+        {
+            public int id;
+            public string firstName;
+            public string lastName;
+
+            public static List<Employee> GetEmployeesArrayList()
+            {
+                var al = new List<Employee>
+                {
+                    new Employee {id = 1, firstName = "Joe", lastName = "Rattz"},
+                    new Employee {id = 2, firstName = "William", lastName = "Gates"},
+                    new Employee {id = 3, firstName = "Anders", lastName = "Hejlsberg"},
+                    new Employee {id = 4, firstName = "David", lastName = "Lightman"},
+                    new Employee {id = 101, firstName = "Kevin", lastName = "Flynn"}
+                };
+
+                return al;
+            }
+        }
+        
+        public class EmployeeOptionEntry
+        {
+            public int id;
+            public long optionsCount;
+            public DateTime dateAwarded;
+
+            public static EmployeeOptionEntry[] GetEmployeeOptionEntries()
+            {
+                EmployeeOptionEntry[] empOptions = {
+                    new EmployeeOptionEntry { 
+                        id = 1, 
+                        optionsCount = 2, 
+                        dateAwarded = DateTime.Parse("1999/12/31") },
+                    new EmployeeOptionEntry { 
+                        id = 2, 
+                        optionsCount = 10000, 
+                        dateAwarded = DateTime.Parse("1992/06/30")  },
+                    new EmployeeOptionEntry { 
+                        id = 2, 
+                        optionsCount = 10000, 
+                        dateAwarded = DateTime.Parse("1994/01/01")  },
+                    new EmployeeOptionEntry { 
+                        id = 3, 
+                        optionsCount = 5000, 
+                        dateAwarded = DateTime.Parse("1997/09/30") },
+                    new EmployeeOptionEntry { 
+                        id = 2, 
+                        optionsCount = 10000, 
+                        dateAwarded = DateTime.Parse("2003/04/01")  },
+                    new EmployeeOptionEntry { 
+                        id = 3, 
+                        optionsCount = 7500, 
+                        dateAwarded = DateTime.Parse("1998/09/30") },
+                    new EmployeeOptionEntry { 
+                        id = 3, 
+                        optionsCount = 7500, 
+                        dateAwarded = DateTime.Parse("1998/09/30") },
+                    new EmployeeOptionEntry { 
+                        id = 4, 
+                        optionsCount = 1500, 
+                        dateAwarded = DateTime.Parse("1997/12/31") },
+                    new EmployeeOptionEntry { 
+                        id = 101, 
+                        optionsCount = 2, 
+                        dateAwarded = DateTime.Parse("1998/12/31") }
+                };
+
+                return empOptions;
             }
         }
     }

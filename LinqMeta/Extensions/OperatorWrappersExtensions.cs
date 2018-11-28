@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
+using LinqMeta.DataTypes.Groupin;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 using LinqMetaCore.Utils;
@@ -39,6 +40,12 @@ namespace LinqMeta.Extensions
         {
             ErrorUtil.NullCheck(enumerable, "enumerable");
             return new OperatorWrapper<EnumeratorWrapper<T>, T>(new EnumeratorWrapper<T>(enumerable.GetEnumerator()));
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static OperatorWrapper<GroupingArray<T>, T> MetaOperators<T>(this GroupingArray<T> collect)
+        {
+            return new OperatorWrapper<GroupingArray<T>, T>(collect);
         }
     }
 }

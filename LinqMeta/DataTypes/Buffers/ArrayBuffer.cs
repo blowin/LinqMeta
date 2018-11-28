@@ -76,6 +76,12 @@ namespace LinqMeta.DataTypes.Buffers
             return _buff;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T[] RawArray()
+        {
+            return _buff;
+        }
+        
         #region Private methods
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

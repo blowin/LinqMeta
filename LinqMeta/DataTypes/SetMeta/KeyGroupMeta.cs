@@ -43,7 +43,7 @@ namespace LinqMeta.DataTypes.SetMeta
         
         public void Add(TKey key, TVal val, uint? capacity = null)
         {
-            var hashCode = CalcHashCode(key);
+            var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
             {
                 if (HashCodes[index] != hashCode || !comparer.Equals(Nodes[index].Key, key))
@@ -103,7 +103,7 @@ namespace LinqMeta.DataTypes.SetMeta
         
         public bool Contains(TKey key)
         {
-            var hashCode = CalcHashCode(key);
+            var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
             {
                 if (HashCodes[index] == hashCode && comparer.Equals(Nodes[index].Key, key))
@@ -115,7 +115,7 @@ namespace LinqMeta.DataTypes.SetMeta
 
         internal bool TryGet(TKey key, out ArrayBuffer<TVal> val)
         {
-            var hashCode = CalcHashCode(key);
+            var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
             {
                 var node = Nodes[index];
@@ -132,7 +132,7 @@ namespace LinqMeta.DataTypes.SetMeta
         
         internal ArrayBuffer<TVal> Get(TKey key)
         {
-            var hashCode = CalcHashCode(key);
+            var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
             {
                 var node = Nodes[index];
@@ -145,7 +145,7 @@ namespace LinqMeta.DataTypes.SetMeta
         
         public bool Remove(TKey key)
         {
-            var hashCode = CalcHashCode(key);
+            var hashCode = comparer.GetHashCode(key);
             var index1 = hashCode % buckets.Length;
             var index2 = -1;
             for (var index3 = buckets[index1] - 1; index3 >= 0; index3 = Nexts[index3])
@@ -204,13 +204,6 @@ namespace LinqMeta.DataTypes.SetMeta
             }
             
             buckets = numArray;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal int CalcHashCode(TKey key)
-        {
-            var calcHash = comparer.GetHashCode(key);
-            return calcHash >= 0 ? calcHash : -calcHash;
         }
         
         [StructLayout(LayoutKind.Auto)]

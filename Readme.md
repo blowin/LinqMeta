@@ -38,7 +38,7 @@ Operation, like XXXDefault may replace. because XXX operators return special typ
 | Select          | +    | +        |
 | SelectMany      | +    | +        |
 | Where      | +    | +        |
-| GroupJoin      | +    | -        |
+| GroupJoin      | +    | +        |
 | Join      | +    | +        |
 | All      | +    | +        |
 | Any      | +    | +        |
