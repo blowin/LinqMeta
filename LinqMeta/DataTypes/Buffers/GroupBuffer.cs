@@ -1,12 +1,12 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using LinqMetaCore.Buffers;
+using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.DataTypes.Buffers
 {
     [StructLayout(LayoutKind.Auto)]
-    internal struct GroupBuffer<T> : IBuffer<T>
+    public struct GroupBuffer<T> : IReadonlyBuffer<T>
     {
         private const int ItemCount = 8;
         
@@ -68,8 +68,9 @@ namespace LinqMeta.DataTypes.Buffers
         {
             if (_size > ItemCount)
             {
-                if (_size == _buff.Length)
-                    Resize((uint)(_size * 1.5));
+                var arrSize = _buff.Length;
+                if ((_size - ItemCount) == arrSize)
+                    Resize((uint)(arrSize * 1.5), arrSize);
 
                 _buff[_size - ItemCount] = add;
             }
@@ -112,18 +113,13 @@ namespace LinqMeta.DataTypes.Buffers
             _size += 1;
         }
 
-        public T[] ToArray()
-        {
-            return null;
-        }
-
         #region Private methods
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Resize(uint newSize)
+        private void Resize(uint newSize, int arrSize)
         {
             var newArr = new T[newSize];
-            Array.Copy(_buff, 0, newArr, 0, Math.Min(_buff.Length, (int)newSize));
+            Array.Copy(_buff, 0, newArr, 0, arrSize);
             _buff = newArr;
         }
 

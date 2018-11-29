@@ -1,9 +1,7 @@
-namespace LinqMetaCore.Buffers
+namespace LinqMetaCore.Intefaces
 {
-    public interface IBuffer<T>
+    public interface IBuffer<T> : IReadonlyBuffer<T>
     {
-        uint Size { get; }
-
         void Add(T item);
 
         T[] ToArray();

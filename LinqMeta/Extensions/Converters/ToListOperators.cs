@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore;
-using LinqMetaCore.Buffers;
 using LinqMetaCore.Intefaces;
 using LinqMetaCore.Utils;
 
