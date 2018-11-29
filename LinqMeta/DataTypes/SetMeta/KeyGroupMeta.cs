@@ -113,7 +113,7 @@ namespace LinqMeta.DataTypes.SetMeta
             return false;
         }
 
-        internal bool TryGet(TKey key, out ArrayBuffer<TVal> val)
+        internal bool TryGet(TKey key, out GroupBuffer<TVal> val)
         {
             var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
@@ -126,11 +126,11 @@ namespace LinqMeta.DataTypes.SetMeta
                 }
             }
 
-            val = default(ArrayBuffer<TVal>);
+            val = default(GroupBuffer<TVal>);
             return false;
         }
         
-        internal ArrayBuffer<TVal> Get(TKey key)
+        internal GroupBuffer<TVal> Get(TKey key)
         {
             var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
@@ -140,7 +140,7 @@ namespace LinqMeta.DataTypes.SetMeta
                     return node.Vals;
             }
       
-            return default(ArrayBuffer<TVal>);
+            return default(GroupBuffer<TVal>);
         }
         
         public bool Remove(TKey key)
@@ -209,13 +209,13 @@ namespace LinqMeta.DataTypes.SetMeta
         [StructLayout(LayoutKind.Auto)]
         internal struct Node
         {
-            internal ArrayBuffer<TVal> Vals;
+            internal GroupBuffer<TVal> Vals;
             internal TKey Key;
             
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void CreateBuffAndAdd(TKey key, TVal val, uint? capacity)
             {
-                Vals = ArrayBuffer<TVal>.CreateBuff(capacity.GetValueOrDefault(ArrayBuffer<TVal>.DefaultCapacity));
+                Vals = new GroupBuffer<TVal>(capacity.GetValueOrDefault(GroupBuffer<TVal>.DefaultCapacity));
                 Key = key;
                 Vals.Add(val);
             }

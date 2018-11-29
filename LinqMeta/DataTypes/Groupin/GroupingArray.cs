@@ -1,24 +1,27 @@
 using System.Runtime.CompilerServices;
+using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore.Intefaces;
 
 namespace LinqMeta.DataTypes.Groupin
 {
+    /// <summary>
+    /// Readonly GroupBuffer
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public struct GroupingArray<T> : ICollectionWrapper<T>
     {
-        private T[] _slice;
-        private int _size;
+        private GroupBuffer<T> _buff;
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GroupingArray(T[] slice, int size)
+        internal GroupingArray(ref GroupBuffer<T> buff)
         {
-            _slice = slice;
-            _size = size;
+            _buff = buff;
         }
 
         public T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _slice[index]; }
+            get { return _buff[index]; }
         }
 
         public bool HasIndexOverhead
@@ -42,7 +45,7 @@ namespace LinqMeta.DataTypes.Groupin
         public int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return _size; }
+            get { return (int)_buff.Size; }
         }
 
     }

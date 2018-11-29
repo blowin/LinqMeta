@@ -24,7 +24,7 @@ namespace LinqMeta.Operators.CollectOperator
         private TCollect _collect;
         private TSelector _selector;
 
-        private ArrayBuffer<T2> _curBuff;
+        private GroupBuffer<T2> _curBuff;
         private T _itemForCombine;
         private TRes _item;
         private int _buffIndex;
@@ -129,7 +129,7 @@ namespace LinqMeta.Operators.CollectOperator
 
             _item = default(TRes);
             _nowGetFromBuff = false;
-            _curBuff = default(ArrayBuffer<T2>);
+            _curBuff = default(GroupBuffer<T2>);
             _itemForCombine = default(T);
         }
     }
