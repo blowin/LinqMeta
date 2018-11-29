@@ -564,13 +564,11 @@ namespace LinqMetaTest
         {
             var employees = Employee.GetEmployeesArrayList();
             var empOptions = EmployeeOptionEntry.GetEmployeeOptionEntries();
-
-            var f = empOptions.Where((entry, i) => i % 2 == 0).ToArray();
             
             
             var linq = employees
                 .GroupJoin(
-                    f,
+                    empOptions.Where((entry, i) => i % 2 == 0),
                     e => e.id,
                     o => o.id,
                     (e, os) => new
@@ -582,7 +580,7 @@ namespace LinqMetaTest
 
             var meta = employees.MetaOperators()
                 .GroupJoinBox(
-                    f.MetaWrapper(),
+                    empOptions.MetaOperators().WhereIndex(pair => pair.Index % 2 == 0).Collect,
                     e => e.id,
                     o => o.id,
                     pair => new
