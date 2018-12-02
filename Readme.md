@@ -28,6 +28,9 @@ SelectWhereIndexTakeSumLinq |    43.24 us |  0.4492 us |  0.4202 us |      0.061
 SelectWhereIndexTakeSumLinqMeta |    23.51 us |  0.2081 us |  0.1946 us |           - |           - |           - |                   - |
 SelectWhereIndexTakeSumStructFunctorLinqMeta |    17.50 us |  0.0933 us |  0.0872 us |           - |           - |           - |                   - |
 SelectWhereIndexTakeSumLinqFaster |   914.04 us |  4.9388 us |  4.6198 us |    350.5859 |    300.7813 |    293.9453 |           1344552 B |
+GroupByMetaStruct | 240.3 us | 0.5768 us | 0.5396 us |     40.5273 |           - |           - |           124.74 KB |
+GroupByMeta | 252.3 us | 0.7696 us | 0.7199 us |     40.5273 |           - |           - |           124.75 KB |
+GroupByLinq | 249.7 us | 0.7771 us | 0.7269 us |     41.0156 |           - |           - |           126.49 KB |
 
 #### Implement methods:
 
@@ -54,7 +57,7 @@ Operation, like XXXDefault may replace. because XXX operators return special typ
 | ThenBy      | +    | -        |
 | ThenByDescending      | +    | -        |
 | Reverse     | +    | +        |
-| GroupBy      | +    | -        |
+| GroupBy      | +    | +        |
 | Aggregate	      | +    | +        |
 | Max	      | +    | +        |
 | Min	      | +    | +        |

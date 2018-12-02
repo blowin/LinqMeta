@@ -66,6 +66,7 @@ namespace LinqMeta.Operators
         IUnion<TCollect, T>,
         IJoin<TCollect, T>,
         IGroupJoin<TCollect, T>,
+        IGroupBy<TCollect, T>,
 
         IToArray<T>,
         IToList<T>,

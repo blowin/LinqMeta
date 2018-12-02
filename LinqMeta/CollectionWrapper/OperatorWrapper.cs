@@ -1210,6 +1210,118 @@ namespace LinqMeta.CollectionWrapper
                 );
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, TSelector, TSelectorRes, TComparer, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>> GroupBy<TSelector, TSelectorRes, TComparer, TKey, TRes>
+        (TSelector selector, TSelectorRes selectorRes, TComparer comparer) 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelectorRes : struct, IFunctor<T, TRes> 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            return new OperatorWrapper<GroupByOperator<TCollect, T, TSelector, TSelectorRes, TComparer, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>>(
+                    new GroupByOperator<TCollect, T, TSelector, TSelectorRes, TComparer, TKey, TRes>(
+                            ref _collect, ref selector, ref selectorRes, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, TSelector, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>> GroupBy<TSelector, TSelectorRes, TKey, TRes>
+            (TSelector selector, TSelectorRes selectorRes) 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TSelectorRes : struct, IFunctor<T, TRes>
+        {
+            var hash = default(CompareHashSetHelper<TKey>);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, TSelector, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>>(
+                    new GroupByOperator<TCollect, T, TSelector, TSelectorRes, CompareHashSetHelper<TKey>, TKey, TRes>(
+                            ref _collect, ref selector, ref selectorRes, ref hash
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, TSelector, IdentityOperator<T>, TComparer, TKey, T>, Pair<TKey, GroupingArray<T>>> GroupBy<TSelector, TKey, TComparer>
+            (TSelector selector, TComparer comparer) 
+            where TSelector : struct, IFunctor<T, TKey> 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            var selectFunc = default(IdentityOperator<T>);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, TSelector, IdentityOperator<T>, TComparer, TKey, T>, Pair<TKey, GroupingArray<T>>>(
+                    new GroupByOperator<TCollect, T, TSelector, IdentityOperator<T>, TComparer, TKey, T>(
+                            ref _collect, ref selector, ref selectFunc, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, TKeySelector, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>, Pair<TKey, GroupingArray<T>>> GroupBy<TKeySelector, TKey>
+            (TKeySelector keySelector) 
+            where TKeySelector : struct, IFunctor<T, TKey>
+        {
+            var comparer = default(CompareHashSetHelper<TKey>);
+            var valSelector = default(IdentityOperator<T>);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, TKeySelector, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>, Pair<TKey, GroupingArray<T>>>(
+                    new GroupByOperator<TCollect, T, TKeySelector, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>(
+                            ref _collect, ref keySelector, ref valSelector, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, TComparer, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>> GroupBy<TComparer, TKey, TRes>
+            (Func<T, TKey> selector, Func<T, TRes> selectorRes, TComparer comparer) 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            var funKeySelector = new FuncFunctor<T, TKey>(selector);
+            var funResSelector = new FuncFunctor<T, TRes>(selectorRes);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, TComparer, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>>(
+                    new GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, TComparer, TKey, TRes>(
+                            ref _collect, ref funKeySelector, ref funResSelector, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>> GroupBy<TKey, TRes>
+            (Func<T, TKey> selector, Func<T, TRes> selectorRes)
+        {
+            var comparer = default(CompareHashSetHelper<TKey>);
+            var funSelector = new FuncFunctor<T, TKey>(selector);
+            var funResSelector = new FuncFunctor<T, TRes>(selectorRes);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>, Pair<TKey, GroupingArray<TRes>>>(
+                    new GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, FuncFunctor<T, TRes>, CompareHashSetHelper<TKey>, TKey, TRes>(
+                            ref _collect, ref funSelector, ref funResSelector, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, TComparer, TKey, T>, Pair<TKey, GroupingArray<T>>> GroupBy<TKey, TComparer>
+            (Func<T, TKey> selector, TComparer comparer) 
+            where TComparer : IEqualityComparer<TKey>
+        {
+            var valSelector = default(IdentityOperator<T>);
+            var funKeySelector = new FuncFunctor<T, TKey>(selector);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, TComparer, TKey, T>, Pair<TKey, GroupingArray<T>>>(
+                    new GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, TComparer, TKey, T>(
+                            ref _collect, ref funKeySelector, ref valSelector, ref comparer
+                        )
+                );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>, Pair<TKey, GroupingArray<T>>> GroupBy<TKey>
+            (Func<T, TKey> selector)
+        {
+            var funKeySelector = new FuncFunctor<T, TKey>(selector);
+            var comparer = default(CompareHashSetHelper<TKey>);
+            var valSelector = default(IdentityOperator<T>);
+            return new OperatorWrapper<GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>, Pair<TKey, GroupingArray<T>>>(
+                    new GroupByOperator<TCollect, T, FuncFunctor<T, TKey>, IdentityOperator<T>, CompareHashSetHelper<TKey>, TKey, T>(
+                            ref _collect, ref funKeySelector, ref valSelector, ref comparer
+                        )
+                );
+        }
+        
         public CollectEnumeratorWrapper<TCollect, T> GetEnumerator()
         {
             return new CollectEnumeratorWrapper<TCollect, T>(_collect);
@@ -1332,5 +1444,6 @@ namespace LinqMeta.CollectionWrapper
         }
 
         #endregion
+
     }
 }

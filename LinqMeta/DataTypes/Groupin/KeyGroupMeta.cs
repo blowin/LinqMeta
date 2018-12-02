@@ -1,11 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LinqMeta.DataTypes.Buffers;
+using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.DataTypes.SetMeta
+namespace LinqMeta.DataTypes.Groupin
 {
     /// <summary>
     /// Modification LinqSet
@@ -16,10 +18,11 @@ namespace LinqMeta.DataTypes.SetMeta
     {
         private TCompare comparer;
         
-        internal Node[] Nodes;
-        internal int[] HashCodes;
-        internal int[] Nexts;
+        private Node[] Nodes;
+        private int[] HashCodes;
+        private int[] Nexts;
         private int[] buckets;
+        
         private int count;
         private int freeList;
   
@@ -29,6 +32,7 @@ namespace LinqMeta.DataTypes.SetMeta
             
             Nodes = new Node[capacity];
             HashCodes = new int[capacity];
+            Memset(HashCodes, 0);
             Nexts = new int[capacity];
             buckets = new int[capacity];
             
@@ -41,7 +45,7 @@ namespace LinqMeta.DataTypes.SetMeta
             return new KeyGroupMeta<TKey, TVal, TCompare>(compare);
         }
         
-        public void Add(TKey key, TVal val, uint? capacity = null)
+        public void Add(TKey key, TVal val)
         {
             var hashCode = comparer.GetHashCode(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
@@ -70,7 +74,7 @@ namespace LinqMeta.DataTypes.SetMeta
             
             var index2 = hashCode % buckets.Length;
             HashCodes[index1] = hashCode;
-            Nodes[index1].CreateBuffAndAdd(key, val, capacity);
+            Nodes[index1].CreateBuffAndAdd(key, val);
             
             Nexts[index1] = buckets[index2] - 1;
             buckets[index2] = index1 + 1;
@@ -92,25 +96,36 @@ namespace LinqMeta.DataTypes.SetMeta
             else
             {
                 var size = containter.Size;
-                var capacity = size > ArrayBuffer<TVal>.DefaultCapacity ? ArrayBuffer<TVal>.DefaultCapacity : (uint)size;
                 for (var i = 0u; i < size; ++i)
                 {
                     var item = containter[i];
-                    Add(selectKey.Invoke(item), item, capacity);
+                    Add(selectKey.Invoke(item), item);
                 }
             }
         }
         
-        public bool Contains(TKey key)
+        internal void Fill<TContainter, TOld, TSelectKey, TResSelector>(ref TContainter containter, ref TSelectKey selectKey, ref TResSelector resSelector)
+            where TContainter : ICollectionWrapper<TOld>
+            where TSelectKey : struct, IFunctor<TOld, TKey>
+            where TResSelector : struct, IFunctor<TOld, TVal>
         {
-            var hashCode = comparer.GetHashCode(key);
-            for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
+            if (containter.HasIndexOverhead)
             {
-                if (HashCodes[index] == hashCode && comparer.Equals(Nodes[index].Key, key))
-                  return true;
+                while (containter.HasNext)
+                {
+                    var oldItem = containter.Value;
+                    Add(selectKey.Invoke(oldItem), resSelector.Invoke(oldItem));
+                }
             }
-      
-            return false;
+            else
+            {
+                var size = containter.Size;
+                for (var i = 0u; i < size; ++i)
+                {
+                    var oldItem = containter[i];
+                    Add(selectKey.Invoke(oldItem), resSelector.Invoke(oldItem));
+                }
+            }
         }
 
         internal bool TryGet(TKey key, out GroupBuffer<TVal> val)
@@ -130,49 +145,6 @@ namespace LinqMeta.DataTypes.SetMeta
             return false;
         }
         
-        internal GroupBuffer<TVal> Get(TKey key)
-        {
-            var hashCode = comparer.GetHashCode(key);
-            for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
-            {
-                var node = Nodes[index];
-                if (HashCodes[index] == hashCode && comparer.Equals(node.Key, key))
-                    return node.Vals;
-            }
-      
-            return default(GroupBuffer<TVal>);
-        }
-        
-        public bool Remove(TKey key)
-        {
-            var hashCode = comparer.GetHashCode(key);
-            var index1 = hashCode % buckets.Length;
-            var index2 = -1;
-            for (var index3 = buckets[index1] - 1; index3 >= 0; index3 = Nexts[index3])
-            {
-                if (HashCodes[index3] != hashCode || !comparer.Equals(Nodes[index3].Key, key))
-                {
-                    index2 = index3;
-                    continue;
-                }
-                
-                if (index2 >= 0)
-                {
-                    Nexts[index2] = Nexts[index3]; 
-                }
-                else
-                {
-                    buckets[index1] = Nexts[index3] + 1;
-                }
-                    
-                HashCodes[index3] = -1;
-                Nexts[index3] = freeList;
-                freeList = index3;
-                return true;
-            }
-            return false;
-        }
-        
         private void Resize()
         {
             var length = checked (count * 2 + 1);
@@ -185,6 +157,7 @@ namespace LinqMeta.DataTypes.SetMeta
             var newHashLists = new int[length];
             Array.Copy(HashCodes, 0, newHashLists, 0, count);
             HashCodes = newHashLists;
+            Memset(HashCodes, (uint)count);
                 
             var newNexts = new int[length];
             Array.Copy(Nexts, 0, newNexts, 0, count);
@@ -213,11 +186,98 @@ namespace LinqMeta.DataTypes.SetMeta
             internal TKey Key;
             
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void CreateBuffAndAdd(TKey key, TVal val, uint? capacity)
+            public void CreateBuffAndAdd(TKey key, TVal val)
             {
-                Vals = new GroupBuffer<TVal>(capacity.GetValueOrDefault(GroupBuffer<TVal>.DefaultCapacity));
+                Vals = new GroupBuffer<TVal>(1u);
                 Key = key;
                 Vals.Add(val);
+            }
+        }
+
+        internal static void Memset(int[] arr, uint startIndex)
+        {
+            var block = 32u;
+            var len = Math.Min(arr.Length, block);
+            var index = startIndex;
+            unsafe
+            {
+                fixed (int* arrPtr = arr)
+                {
+                    while (index < len)
+                    {
+                        arrPtr[index] = -1;
+                        ++index;
+                    }
+                }
+            }
+
+            len = arr.Length;
+            while (index < len)
+            {
+                Array.Copy(arr, 0, arr, (int)index, (int)Math.Min(block, len - index));
+                index += block;
+                block *= 2;
+            }
+        }
+        
+        internal KeyGroupingEnumerator GetEnumerator()
+        {
+            return new KeyGroupingEnumerator(Nodes, HashCodes);
+        }
+        
+        internal struct KeyGroupingEnumerator : IEnumerator<Pair<TKey, GroupingArray<TVal>>>
+        {
+            private Node[] _nodes;
+            private int[] _hashCodes;
+            private int _index;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal KeyGroupingEnumerator(Node[] nodes, int[] hashCodes)
+            {
+                _nodes = nodes;
+                _hashCodes = hashCodes;
+                _index = -1;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool MoveNext()
+            {
+                var size = _nodes.Length;
+                while (++_index < size)
+                {
+                    if (_hashCodes[_index] < 0) 
+                        continue;
+                    
+                    return true;
+                }
+                
+                Reset();
+                return false;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Reset()
+            {
+                _index = -1;
+            }
+
+            public Pair<TKey, GroupingArray<TVal>> Current
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get
+                {
+                    var node = _nodes[_index];
+                    return new Pair<TKey, GroupingArray<TVal>>(node.Key, new GroupingArray<TVal>(ref node.Vals));
+                }
+            }
+
+            object IEnumerator.Current
+            {
+                get { return Current; }
+            }
+
+            public void Dispose()
+            {
             }
         }
   }

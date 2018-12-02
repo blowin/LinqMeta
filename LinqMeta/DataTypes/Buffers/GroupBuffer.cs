@@ -8,7 +8,7 @@ namespace LinqMeta.DataTypes.Buffers
     [StructLayout(LayoutKind.Auto)]
     public struct GroupBuffer<T> : IReadonlyBuffer<T>
     {
-        private const int ItemCount = 8;
+        internal const int ItemCount = 8;
         
         public const uint DefaultCapacity = 8;
         
@@ -70,7 +70,7 @@ namespace LinqMeta.DataTypes.Buffers
             {
                 var arrSize = _buff.Length;
                 if ((_size - ItemCount) == arrSize)
-                    Resize((uint)(arrSize * 1.5), arrSize);
+                    Resize((uint)(arrSize * 2), arrSize);
 
                 _buff[_size - ItemCount] = add;
             }

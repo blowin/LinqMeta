@@ -8,8 +8,10 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using JM.LinqFaster;
 using LinqMeta.DataTypes;
+using LinqMeta.DataTypes.Groupin;
 using LinqMeta.DataTypes.SetMeta;
 using LinqMeta.Extensions;
+using LinqMeta.Operators;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
@@ -31,11 +33,15 @@ namespace Benchmark
             for (var i = 0; i < N; i++)
             {
                 //arr[i] = rnd.Next(2);
-                var item = rnd.Next(10);
+                var item = rnd.Next(100);
                 _list.Add(item);
             }
         }
 
+        private int[] GetArr()
+        {
+            return new int[N];
+        }
 
 /*
         #region Sum
@@ -96,7 +102,7 @@ namespace Benchmark
 
         #endregion
  */
-  /*     
+    /*   
         #region SelectWhereSum
 
         [Benchmark]
@@ -114,9 +120,10 @@ namespace Benchmark
 
         #endregion
   */
-       
+
+        /*
         #region SelectSum
-/*
+
         [Benchmark]
         public long SelectWhereIndexTakeSumLinq() => _list.Select(i => (long)i).TakeWhile((l, i) => i < 20_000).Sum();
        
@@ -129,9 +136,52 @@ namespace Benchmark
         
         [Benchmark]
         public long SelectWhereIndexTakeSumLinqFaster() => _list.SelectF(i => (long)i).WhereF((l, i) => i < 20_000).SumF();
-*/
         
         #endregion
+        */
+
+        
+        #region GroupBy
+        
+        [Benchmark]
+        public int GroupByMetaStruct()
+        {
+            var sum = 0;
+            foreach (var key in _list.MetaOperators().GroupBy<IdentityOperator<int>, int>(new IdentityOperator<int>())
+                .Select<FirstSelector<int, GroupingArray<int>>, int>(new FirstSelector<int, GroupingArray<int>>()))
+            {
+                sum += key;
+            }
+
+            return sum;
+        }
+        
+        [Benchmark]
+        public int GroupByMeta()
+        {
+            var sum = 0;
+            foreach (var key in _list.MetaOperators().GroupBy(i => i).Select(pair => pair.First))
+            {
+                sum += key;
+            }
+
+            return sum;
+        }
+        
+        [Benchmark]
+        public int GroupByLinq()
+        {
+            var sum = 0;
+            foreach (var key in _list.GroupBy(i => i).Select(ints => ints.Key))
+            {
+                sum += key;
+            }
+
+            return sum;
+        }
+        
+        #endregion
+        
     }
     
     public class Program
@@ -145,6 +195,14 @@ namespace Benchmark
         }
     }
 
+    internal struct FirstSelector<TF, TS> : IFunctor<Pair<TF, TS>, TF>
+    {
+        public TF Invoke(Pair<TF, TS> param)
+        {
+            return param.First;
+        }
+    }
+    
     internal struct To2Functor : IFunctor<int, int, int>
     {
         public int Invoke(int param, int param2)

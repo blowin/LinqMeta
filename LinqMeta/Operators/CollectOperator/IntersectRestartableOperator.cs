@@ -95,7 +95,7 @@ namespace LinqMeta.Operators.CollectOperator
                         _intersectCollect.Add(_collect[i]);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Can throw Exception. then collect is range. for example
                 // ignored

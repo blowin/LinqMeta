@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LinqMeta.DataTypes.Buffers;
+using LinqMeta.DataTypes.Groupin;
 using LinqMeta.DataTypes.SetMeta;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;

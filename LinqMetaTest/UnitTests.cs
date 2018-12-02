@@ -5,13 +5,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using LinqMeta.CollectionWrapper;
 using LinqMeta.Extensions;
+using LinqMetaCore;
 using Xunit;
 
 namespace LinqMetaTest
 {   
     public class UnitTest1
     {
-        private int[] arr = {1, 2, 3, -2, 4, 1, 6, 4, 8, 9, 10, 6, -2, -3, 1};
+        private int[] arr = {1, 1, 1, 1, 1, 2, 8, 3, -2, 4, 1, 6, -2, -2, 4, 8, 8, 9, 10, 6, -2, -3, 1};
 
         static string[] cars = { "Alfa Romeo", "Aston Martin", "Audi", "Nissan", "Chevrolet",  "Chrysler", "Dodge", "BMW", 
             "Ferrari",  "Bentley", "Ford", "Lexus", "Mercedes", "Toyota", "Volvo", "Subaru" };
@@ -625,6 +626,43 @@ namespace LinqMetaTest
             
             Assert.Equal(linq, meta);
         }
+
+        [Fact]
+        public void GroupBy()
+        {
+            var linq = EmployeeOptionEntry
+                .GetEmployeeOptionEntries()
+                .GroupBy(entry => entry.id)
+                .Select(entries => entries.ToList())
+                .ToList();
+
+            var meta = EmployeeOptionEntry
+                .GetEmployeeOptionEntries().MetaOperators()
+                .GroupBy(entry => entry.id)
+                .Select(pair => pair.Second.MetaOperators().ToList())
+                .ToList();
+
+
+            var count = linq.Count;
+            var flags = new bool[count];
+            for (var i = 0; i < count; i++)
+            {
+                flags[i] = true;
+                var linqI = linq[i];
+                var metaI = meta[i];
+                for (var j = 0; j < linqI.Count; j++)
+                {
+                    var lJVal = linqI[j];
+                    var mJVal = metaI[j];
+                    if (lJVal.Equals(mJVal)) 
+                        continue;
+                    
+                    flags[i] = false;
+                    break;
+                }
+            }
+            Assert.True(flags.All(b => b));
+        }
         
         struct IntComparer : IEqualityComparer<int>
         {
@@ -641,7 +679,7 @@ namespace LinqMetaTest
             }
         }
         
-        public class Employee
+        public class Employee : IEquatable<Employee>
         {
             public int id;
             public string firstName;
@@ -660,9 +698,35 @@ namespace LinqMetaTest
 
                 return al;
             }
+
+            public bool Equals(Employee other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return id == other.id && string.Equals(firstName, other.firstName) && string.Equals(lastName, other.lastName);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((Employee) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = id;
+                    hashCode = (hashCode * 397) ^ (firstName != null ? firstName.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (lastName != null ? lastName.GetHashCode() : 0);
+                    return hashCode;
+                }
+            }
         }
         
-        public class EmployeeOptionEntry
+        public class EmployeeOptionEntry : IEquatable<EmployeeOptionEntry>
         {
             public int id;
             public long optionsCount;
@@ -710,6 +774,32 @@ namespace LinqMetaTest
                 };
 
                 return empOptions;
+            }
+
+            public bool Equals(EmployeeOptionEntry other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return id == other.id && optionsCount == other.optionsCount && dateAwarded.Equals(other.dateAwarded);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((EmployeeOptionEntry) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = id;
+                    hashCode = (hashCode * 397) ^ optionsCount.GetHashCode();
+                    hashCode = (hashCode * 397) ^ dateAwarded.GetHashCode();
+                    return hashCode;
+                }
             }
         }
     }

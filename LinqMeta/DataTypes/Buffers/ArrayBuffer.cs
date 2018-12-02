@@ -36,7 +36,7 @@ namespace LinqMeta.DataTypes.Buffers
         public void Add(T add)
         {
             if (_size == _buff.Length)
-                Resize(_size > 0 ? (uint)(_size * 1.5) : DefaultCapacity);
+                Resize(_size > 0 ? (_size * 2u) : DefaultCapacity);
 
             _buff[_size++] = add;
         }
