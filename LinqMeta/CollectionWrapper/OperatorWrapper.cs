@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using LinqMeta.CollectionWrapper.EnumeratorWrapper;
-using LinqMeta.DataTypes.Groupin;
-using LinqMeta.DataTypes.SetMeta;
+using LinqMeta.DataTypes.Grouping;
 using LinqMeta.DataTypes.Statistic;
 using LinqMeta.Extensions.Converters;
 using LinqMeta.Extensions.Operators;
@@ -1321,7 +1320,7 @@ namespace LinqMeta.CollectionWrapper
                         )
                 );
         }
-        
+
         public CollectEnumeratorWrapper<TCollect, T> GetEnumerator()
         {
             return new CollectEnumeratorWrapper<TCollect, T>(_collect);

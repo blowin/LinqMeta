@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.DataTypes.Groupin;
-using LinqMeta.DataTypes.SetMeta;
+using LinqMeta.DataTypes.Grouping;
 using LinqMeta.Functors;
 using LinqMeta.Operators.CollectOperator;
 using LinqMetaCore;

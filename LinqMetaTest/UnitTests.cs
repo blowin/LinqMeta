@@ -641,27 +641,8 @@ namespace LinqMetaTest
                 .GroupBy(entry => entry.id)
                 .Select(pair => pair.Second.MetaOperators().ToList())
                 .ToList();
-
-
-            var count = linq.Count;
-            var flags = new bool[count];
-            for (var i = 0; i < count; i++)
-            {
-                flags[i] = true;
-                var linqI = linq[i];
-                var metaI = meta[i];
-                for (var j = 0; j < linqI.Count; j++)
-                {
-                    var lJVal = linqI[j];
-                    var mJVal = metaI[j];
-                    if (lJVal.Equals(mJVal)) 
-                        continue;
-                    
-                    flags[i] = false;
-                    break;
-                }
-            }
-            Assert.True(flags.All(b => b));
+            
+            Assert.True(EmployeeOptionEntry.Compare(linq, meta));
         }
         
         struct IntComparer : IEqualityComparer<int>
@@ -776,6 +757,30 @@ namespace LinqMetaTest
                 return empOptions;
             }
 
+            public static bool Compare(List<List<EmployeeOptionEntry>> first, List<List<EmployeeOptionEntry>> second)
+            {
+                if (first.Count != second.Count)
+                    return false;
+                
+                var count = first.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    var linqI = first[i];
+                    var metaI = second[i];
+                    if (linqI.Count != metaI.Count)
+                        return false;
+
+                    var iterCount = linqI.Count;
+                    for (var j = 0; j < iterCount; j++)
+                    {
+                        if (!metaI.Contains(linqI[j]))
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+            
             public bool Equals(EmployeeOptionEntry other)
             {
                 if (ReferenceEquals(null, other)) return false;

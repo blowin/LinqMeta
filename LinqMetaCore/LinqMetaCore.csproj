@@ -3,7 +3,7 @@
     <PropertyGroup>
         <AssemblyName>LinqMetaCore</AssemblyName>
         <RootNamespace>LinqMetaCore</RootNamespace>
-        <TargetFrameworks>net461;netstandard1.3;netcoreapp2.0</TargetFrameworks>
+        <TargetFrameworks>net461;netstandard1.3</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

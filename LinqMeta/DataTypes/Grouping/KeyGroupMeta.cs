@@ -7,7 +7,7 @@ using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.DataTypes.Groupin
+namespace LinqMeta.DataTypes.Grouping
 {
     /// <summary>
     /// Modification LinqSet
@@ -18,7 +18,8 @@ namespace LinqMeta.DataTypes.Groupin
     {
         private TCompare comparer;
         
-        private Node[] Nodes;
+        private GroupBuffer<TVal>[] Vals;
+        private TKey[] Keys;
         private int[] HashCodes;
         private int[] Nexts;
         private int[] buckets;
@@ -30,9 +31,10 @@ namespace LinqMeta.DataTypes.Groupin
         {
             this.comparer = comparer;
             
-            Nodes = new Node[capacity];
+            Vals = new GroupBuffer<TVal>[capacity];
+            Keys = new TKey[capacity];
             HashCodes = new int[capacity];
-            Memset(HashCodes, 0);
+            GroupUtility.Memset(HashCodes, 0);
             Nexts = new int[capacity];
             buckets = new int[capacity];
             
@@ -47,13 +49,13 @@ namespace LinqMeta.DataTypes.Groupin
         
         public void Add(TKey key, TVal val)
         {
-            var hashCode = comparer.GetHashCode(key);
+            var hashCode = Hash(key);
             for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
             {
-                if (HashCodes[index] != hashCode || !comparer.Equals(Nodes[index].Key, key))
+                if (HashCodes[index] != hashCode || !comparer.Equals(Keys[index], key))
                   continue;
                 
-                Nodes[index].Vals.Add(val);
+                Vals[index].Add(val);
                 return;
             }
             
@@ -65,7 +67,7 @@ namespace LinqMeta.DataTypes.Groupin
             }
             else
             {
-                if (count == Nodes.Length)
+                if (count == Vals.Length)
                     Resize();
                 
                 index1 = count;
@@ -74,7 +76,12 @@ namespace LinqMeta.DataTypes.Groupin
             
             var index2 = hashCode % buckets.Length;
             HashCodes[index1] = hashCode;
-            Nodes[index1].CreateBuffAndAdd(key, val);
+
+            Keys[index1] = key;
+            
+            var buff = GroupBuffer<TVal>.CreateBuff(1u);
+            Vals[index1] = buff;
+            buff.Add(val);
             
             Nexts[index1] = buckets[index2] - 1;
             buckets[index2] = index1 + 1;
@@ -130,13 +137,12 @@ namespace LinqMeta.DataTypes.Groupin
 
         internal bool TryGet(TKey key, out GroupBuffer<TVal> val)
         {
-            var hashCode = comparer.GetHashCode(key);
-            for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0; index = Nexts[index])
+            var hashCode = Hash(key);
+            for (var index = buckets[hashCode % buckets.Length] - 1; index >= 0u; index = Nexts[index])
             {
-                var node = Nodes[index];
-                if (HashCodes[index] == hashCode && comparer.Equals(node.Key, key))
+                if (HashCodes[index] == hashCode && comparer.Equals(Keys[index], key))
                 {
-                    val = node.Vals;
+                    val = Vals[index];
                     return true;
                 }
             }
@@ -150,14 +156,18 @@ namespace LinqMeta.DataTypes.Groupin
             var length = checked (count * 2 + 1);
             var numArray = new int[length];
             
-            var newElements = new Node[length];
-            Array.Copy(Nodes, 0, newElements, 0, count);
-            Nodes = newElements;
+            var newVals = new GroupBuffer<TVal>[length];
+            Array.Copy(Vals, 0, newVals, 0, count);
+            Vals = newVals;
                 
+            var newKeys = new TKey[length];
+            Array.Copy(Keys, 0, newKeys, 0, count);
+            Keys = newKeys;
+            
             var newHashLists = new int[length];
             Array.Copy(HashCodes, 0, newHashLists, 0, count);
             HashCodes = newHashLists;
-            Memset(HashCodes, (uint)count);
+            GroupUtility.Memset(HashCodes, (uint)count);
                 
             var newNexts = new int[length];
             Array.Copy(Nexts, 0, newNexts, 0, count);
@@ -167,74 +177,41 @@ namespace LinqMeta.DataTypes.Groupin
             {
                 fixed (int* pointNumArr = numArray, ptrHash = HashCodes, ptrNexts = Nexts)
                 {
-                    for (var index1 = 0; index1 < count; ++index1)
+                    for (var index1 = 0u; index1 < (uint)count; ++index1)
                     {
                         var index2 = ptrHash[index1] % length;
                         ptrNexts[index1] = pointNumArr[index2] - 1;
-                        pointNumArr[index2] = index1 + 1;
+                        pointNumArr[index2] = (int)(index1 + 1);
                     }
                 }
             }
             
             buckets = numArray;
         }
-        
-        [StructLayout(LayoutKind.Auto)]
-        internal struct Node
-        {
-            internal GroupBuffer<TVal> Vals;
-            internal TKey Key;
-            
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void CreateBuffAndAdd(TKey key, TVal val)
-            {
-                Vals = new GroupBuffer<TVal>(1u);
-                Key = key;
-                Vals.Add(val);
-            }
-        }
 
-        internal static void Memset(int[] arr, uint startIndex)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int Hash(TKey key)
         {
-            var block = 32u;
-            var len = Math.Min(arr.Length, block);
-            var index = startIndex;
-            unsafe
-            {
-                fixed (int* arrPtr = arr)
-                {
-                    while (index < len)
-                    {
-                        arrPtr[index] = -1;
-                        ++index;
-                    }
-                }
-            }
-
-            len = arr.Length;
-            while (index < len)
-            {
-                Array.Copy(arr, 0, arr, (int)index, (int)Math.Min(block, len - index));
-                index += block;
-                block *= 2;
-            }
+            return comparer.GetHashCode(key) & 0x7FFFFFFF;
         }
         
         internal KeyGroupingEnumerator GetEnumerator()
         {
-            return new KeyGroupingEnumerator(Nodes, HashCodes);
+            return new KeyGroupingEnumerator(Vals, Keys, HashCodes);
         }
         
         internal struct KeyGroupingEnumerator : IEnumerator<Pair<TKey, GroupingArray<TVal>>>
         {
-            private Node[] _nodes;
+            private GroupBuffer<TVal>[] _vals;
+            private TKey[] _keys;
             private int[] _hashCodes;
             private int _index;
             
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal KeyGroupingEnumerator(Node[] nodes, int[] hashCodes)
+            internal KeyGroupingEnumerator(GroupBuffer<TVal>[] vals, TKey[] keys, int[] hashCodes)
             {
-                _nodes = nodes;
+                _vals = vals;
+                _keys = keys;
                 _hashCodes = hashCodes;
                 _index = -1;
             }
@@ -242,7 +219,7 @@ namespace LinqMeta.DataTypes.Groupin
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
-                var size = _nodes.Length;
+                var size = _vals.Length;
                 while (++_index < size)
                 {
                     if (_hashCodes[_index] < 0) 
@@ -266,8 +243,7 @@ namespace LinqMeta.DataTypes.Groupin
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get
                 {
-                    var node = _nodes[_index];
-                    return new Pair<TKey, GroupingArray<TVal>>(node.Key, new GroupingArray<TVal>(ref node.Vals));
+                    return new Pair<TKey, GroupingArray<TVal>>(_keys[_index], new GroupingArray<TVal>(_vals[_index]));
                 }
             }
 

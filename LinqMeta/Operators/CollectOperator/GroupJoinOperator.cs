@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LinqMeta.DataTypes.Buffers;
-using LinqMeta.DataTypes.Groupin;
-using LinqMeta.DataTypes.SetMeta;
+using LinqMeta.DataTypes.Grouping;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 
@@ -42,13 +41,13 @@ namespace LinqMeta.Operators.CollectOperator
                     while (_collect.HasNext)
                     {
                         var collectValue = _collect.Value;
-                        GroupBuffer<T2> buff = default(GroupBuffer<T2>);
+                        GroupBuffer<T2> buff;
                         if (_keyGroupMeta.TryGet(_selector.Invoke(collectValue), out buff))
                         {
                             _item = _resSelector.Invoke(
                                 new Pair<T, GroupingArray<T2>>(
                                     collectValue,
-                                    new GroupingArray<T2>(ref buff))
+                                    new GroupingArray<T2>(buff))
                             );
                         }
                         else
@@ -56,7 +55,7 @@ namespace LinqMeta.Operators.CollectOperator
                             _item = _resSelector.Invoke(
                                 new Pair<T, GroupingArray<T2>>(
                                     collectValue,
-                                    new GroupingArray<T2>(ref buff)
+                                    new GroupingArray<T2>(buff)
                                 )
                             );
                         }
@@ -69,13 +68,13 @@ namespace LinqMeta.Operators.CollectOperator
                     while (++_indexVal < size)
                     {
                         var collectValue = _collect[(uint) _indexVal];
-                        GroupBuffer<T2> buff = default(GroupBuffer<T2>);
+                        GroupBuffer<T2> buff;
                         if (_keyGroupMeta.TryGet(_selector.Invoke(collectValue), out buff))
                         {
                             _item = _resSelector.Invoke(
                                 new Pair<T, GroupingArray<T2>>(
                                     collectValue,
-                                    new GroupingArray<T2>(ref buff))
+                                    new GroupingArray<T2>(buff))
                             );
                         }
                         else
@@ -83,7 +82,7 @@ namespace LinqMeta.Operators.CollectOperator
                             _item = _resSelector.Invoke(
                                 new Pair<T, GroupingArray<T2>>(
                                     collectValue,
-                                    new GroupingArray<T2>(ref buff)
+                                    new GroupingArray<T2>(buff)
                                 )
                             );
                         }

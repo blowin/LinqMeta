@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LinqMeta.CollectionWrapper;
-using LinqMeta.DataTypes.Groupin;
+using LinqMeta.DataTypes.Grouping;
 using LinqMetaCore;
 using LinqMetaCore.Intefaces;
 using LinqMetaCore.Utils;

@@ -6,7 +6,7 @@ using LinqMetaCore.Intefaces;
 namespace LinqMeta.DataTypes.Buffers
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct GroupBuffer<T> : IReadonlyBuffer<T>
+    public class GroupBuffer<T> : IReadonlyBuffer<T>
     {
         internal const int ItemCount = 8;
         

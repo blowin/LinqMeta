@@ -8,8 +8,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using JM.LinqFaster;
 using LinqMeta.DataTypes;
-using LinqMeta.DataTypes.Groupin;
-using LinqMeta.DataTypes.SetMeta;
+using LinqMeta.DataTypes.Grouping;
 using LinqMeta.Extensions;
 using LinqMeta.Operators;
 using LinqMetaCore;
@@ -167,6 +166,7 @@ namespace Benchmark
 
             return sum;
         }
+
         
         [Benchmark]
         public int GroupByLinq()

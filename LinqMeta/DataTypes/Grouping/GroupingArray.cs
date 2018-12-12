@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using LinqMeta.DataTypes.Buffers;
 using LinqMetaCore.Intefaces;
 
-namespace LinqMeta.DataTypes.Groupin
+namespace LinqMeta.DataTypes.Grouping
 {
     /// <summary>
     /// Readonly GroupBuffer
@@ -10,12 +10,14 @@ namespace LinqMeta.DataTypes.Groupin
     /// <typeparam name="T"></typeparam>
     public struct GroupingArray<T> : ICollectionWrapper<T>
     {
+        private static GroupBuffer<T> Empty = GroupBuffer<T>.CreateBuff(0);
+        
         private GroupBuffer<T> _buff;
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal GroupingArray(ref GroupBuffer<T> buff)
+        internal GroupingArray(GroupBuffer<T> buff)
         {
-            _buff = buff;
+            _buff = buff ?? Empty;
         }
 
         public T this[uint index]
