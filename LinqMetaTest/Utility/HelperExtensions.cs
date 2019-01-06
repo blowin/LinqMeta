@@ -1,6 +1,6 @@
 using System;
 
-namespace LinqMetaTest
+namespace LinqMetaTest.Utility
 {
     public static class HelperExtensions
     {
