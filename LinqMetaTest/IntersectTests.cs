@@ -15,15 +15,31 @@ namespace LinqMetaTest
 
             var linq = carsFirst.Intersect(carsSecond).ToArray();
             var metaLinq = carsFirst.MetaOperators().Intersect(carsSecond.MetaWrapper()).ToArray();
+            
             Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void WhereIntersect()
+        {
+            var carsFirst = GlobalCollection.CarsFirst;
+            var carsSecond = GlobalCollection.CarsSecond;
 
-            linq = carsFirst.Where((s, i) => i != 1).Intersect(carsSecond).ToArray();
-            metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Intersect(carsSecond.MetaWrapper()).ToArray();
+            var linq = carsFirst.Where((s, i) => i != 1).Intersect(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Intersect(carsSecond.MetaWrapper()).ToArray();
+            
             Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void WhereIndexIntersect()
+        {
+            var carsFirst = GlobalCollection.CarsFirst;
+            var carsSecond = GlobalCollection.CarsSecond;
 
-            linq = carsFirst.Intersect(carsSecond).Where((s, i) => i != 1).ToArray();
-            metaLinq = carsFirst.MetaOperators().Intersect(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1)
-                .ToArray();
+            var linq = carsFirst.Where((s, i) => i != 1).Intersect(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Intersect(carsSecond.MetaWrapper()).ToArray();
+            
             Assert.Equal(linq, metaLinq);
         }
     }

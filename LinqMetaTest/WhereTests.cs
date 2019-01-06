@@ -11,8 +11,10 @@ namespace LinqMetaTest
         public void Where()
         {
             var arr = GlobalCollection.Arr;
+            
             var first = arr.Where(i => i % 2 == 0).Sum();
             var second = arr.MetaOperators().Where(i => i % 2 == 0).Sum();
+            
             Assert.Equal(first, second);
         }
         
@@ -20,8 +22,10 @@ namespace LinqMetaTest
         public void WhereIndex()
         {
             var arr = GlobalCollection.Arr;
+            
             var first = arr.Where((i, i1) => i1 < 4).Sum();
             var second = arr.MetaOperators().WhereIndex(pair => pair.Index < 4).Sum();
+            
             Assert.Equal(first, second);
         }
         
@@ -29,8 +33,10 @@ namespace LinqMetaTest
         public void WhereSelectSum()
         {
             var arr = GlobalCollection.Arr;
+            
             var first = arr.Where(i => i % 2 == 0).Select(i => i - 1).Sum();
             var second = arr.MetaOperators().Where(i => i % 2 == 0).Select(i => i - 1).Sum();
+            
             Assert.Equal(first, second);
         }
         

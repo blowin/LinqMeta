@@ -11,15 +11,21 @@ namespace LinqMetaTest
         public void Select()
         {
             var arr = GlobalCollection.Arr;
-            Assert.Equal(arr.Select(i => (double)i).Sum(), arr.MetaOperators().Select(i => (double)i).Sum());
+
+            var linq = arr.Select(i => (double) i).Sum();
+            var meta = arr.MetaOperators().Select(i => (double) i).Sum();
+            
+            Assert.Equal(linq, meta);
         }
         
         [Fact]
         public void SelectIndex()
         {
             var arr = GlobalCollection.Arr;
+            
             var first = arr.Select((i, i1) => i + i1).Sum();
             var second = arr.MetaOperators().SelectIndex(pair => pair.Index + pair.Item).Sum();
+            
             Assert.Equal(first, second);
         }
         

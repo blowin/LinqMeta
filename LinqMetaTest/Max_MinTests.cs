@@ -11,20 +11,28 @@ namespace LinqMetaTest
         public void Min()
         {
             var arr = GlobalCollection.Arr;
-            Assert.Equal(arr.Min(), arr.MetaOperators().Min());
+
+            var linq = arr.Min();
+            var meta = arr.MetaOperators().Min();
+            Assert.Equal(linq, meta);
         }
         
         [Fact]
         public void Max()
         {
             var arr = GlobalCollection.Arr;
-            Assert.Equal(arr.Max(), arr.MetaOperators().Max());
+
+            var linq = arr.Max();
+            var meta = arr.MetaOperators().Max();
+            
+            Assert.Equal(linq, meta);
         }
 
         [Fact]
         public void MaxMin()
         {
             var arr = GlobalCollection.Arr;
+            
             var minLinq = arr.Min();
             var maxLinq = arr.Max();
 

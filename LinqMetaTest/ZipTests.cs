@@ -18,14 +18,26 @@ namespace LinqMetaTest
                 .Select(pair => pair.First + pair.Second).Sum();
             
             Assert.Equal(linqSum, metaLinqSum);
+        }
+        
+        [Fact]
+        public void ZipSelect()
+        {
+            var arr = GlobalCollection.Arr;
 
             var linqSum2 = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
             var metaLinqSum2 = arr.MetaOperators().ZipSelect<EnumeratorWrapper<int>, int>(Enumerable.Repeat(5, 5).MetaWrapper(), pair => pair.First + pair.Second).Sum();
+            
             Assert.Equal(linqSum2, metaLinqSum2);
+        }
+        
+        [Fact]
+        public void ZipBoxSelect()
+        {
+            var arr = GlobalCollection.Arr;
 
-            linqSum = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
-            metaLinqSum = arr.MetaOperators()
-                .ZipBoxSelect(Enumerable.Repeat(5, 5).MetaWrapper(), pair => pair.First + pair.Second).Sum();
+            var linqSum = arr.Zip(Enumerable.Repeat(5, 5), (i, i1) => i + i1).Sum();
+            var metaLinqSum = arr.MetaOperators().ZipBoxSelect(Enumerable.Repeat(5, 5).MetaWrapper(), pair => pair.First + pair.Second).Sum();
             
             Assert.Equal(linqSum, metaLinqSum);
         }

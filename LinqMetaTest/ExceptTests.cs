@@ -15,14 +15,31 @@ namespace LinqMetaTest
 
             var linq = carsFirst.Except(carsSecond).ToArray();
             var metaLinq = carsFirst.MetaOperators().Except(carsSecond.MetaWrapper()).ToArray();
+            
             Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void WhereIndexExcept()
+        {
+            var carsFirst = GlobalCollection.CarsFirst;
+            var carsSecond = GlobalCollection.CarsSecond;
 
-            linq = carsFirst.Where((s, i) => i != 1).Except(carsSecond).ToArray();
-            metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Except(carsSecond.MetaWrapper()).ToArray();
+            var linq = carsFirst.Where((s, i) => i != 1).Except(carsSecond).ToArray();
+            var metaLinq = carsFirst.MetaOperators().WhereIndex(pair => pair.Index != 1).Except(carsSecond.MetaWrapper()).ToArray();
+            
             Assert.Equal(linq, metaLinq);
+        }
+        
+        [Fact]
+        public void WhereExcept()
+        {
+            var carsFirst = GlobalCollection.CarsFirst;
+            var carsSecond = GlobalCollection.CarsSecond;
 
-            linq = carsFirst.Except(carsSecond).Where((s, i) => i != 1).ToArray();
-            metaLinq = carsFirst.MetaOperators().Except(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1).ToArray();
+            var linq = carsFirst.Except(carsSecond).Where((s, i) => i != 1).ToArray();
+            var metaLinq = carsFirst.MetaOperators().Except(carsSecond.MetaWrapper()).WhereIndex(pair => pair.Index != 1).ToArray();
+            
             Assert.Equal(linq, metaLinq);
         }
     }

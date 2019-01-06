@@ -7,7 +7,7 @@ namespace LinqMetaTest
     public class ForEachTests
     {
         [Fact]
-        public void ForEach()
+        public void LambdaForEach()
         {
             var arr = GlobalCollection.Arr;
             

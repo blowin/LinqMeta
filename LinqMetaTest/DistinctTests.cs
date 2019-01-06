@@ -12,10 +12,20 @@ namespace LinqMetaTest
         {
             var arr = GlobalCollection.Arr;
             
-            Assert.Equal(arr.Distinct().ToArray(), arr.MetaOperators().Distinct().ToArray());
+            var linq = arr.Distinct().ToArray();
+            var meta = arr.MetaOperators().Distinct().ToArray();
+            Assert.Equal(linq, meta);
+        }
+        
+        [Fact]
+        public void WhereDistinct()
+        {
+            var arr = GlobalCollection.Arr;
+
+            var linq = arr.Where(i => i % 2 == 0).Distinct().ToArray();
+            var meta = arr.MetaOperators().Where(i => i % 2 == 0).Distinct().ToArray();
             
-            Assert.Equal(arr.Where(i => i % 2 == 0).Distinct().ToArray(), 
-                arr.MetaOperators().Where(i => i % 2 == 0).Distinct().ToArray());
+            Assert.Equal(linq, meta);
         }
     }
 }

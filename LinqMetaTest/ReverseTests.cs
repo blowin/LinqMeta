@@ -11,9 +11,17 @@ namespace LinqMetaTest
         public void Reverse()
         {
             var arr = GlobalCollection.Arr;
-            
-            Assert.Equal(arr.Reverse().ToArray(), arr.MetaOperators().Reverse().ToArray());
 
+            var linq = arr.Reverse().ToArray();
+            var meta = arr.MetaOperators().Reverse().ToArray();
+            Assert.Equal(linq, meta);
+        }
+        
+        [Fact]
+        public void WhereReverse()
+        {
+            var arr = GlobalCollection.Arr;
+            
             var linq = arr.Where(i => i % 2 == 0).Reverse().ToArray();
             var metaLinq = arr.MetaOperators().Where(i => i % 2 == 0).Reverse().ToArray();
                 

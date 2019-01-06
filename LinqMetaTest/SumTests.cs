@@ -11,8 +11,11 @@ namespace LinqMetaTest
         public void Sum()
         {
             var arr = GlobalCollection.Arr;
+
+            var linq = arr.Sum();
+            var meta = arr.MetaOperators().Sum();
             
-            Assert.Equal(arr.Sum(), arr.MetaOperators().Sum());
+            Assert.Equal(linq, meta);
         }
         
         [Fact]
