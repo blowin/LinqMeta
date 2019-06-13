@@ -23,7 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LinqMetaCore\LinqMetaCore.csproj" />
+      <PackageReference Include="blowin.LinqMeta.Core" Version="1.0.0" />
     </ItemGroup>
 
 </Project>
