@@ -1,10 +1,10 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "D:\\Program\\projects\\C#\\StackIter\\LinqMeta\\LinqMetaCore\\LinqMetaCore.csproj",
-    "projectName": "LinqMetaCore",
-    "projectPath": "D:\\Program\\projects\\C#\\StackIter\\LinqMeta\\LinqMetaCore\\LinqMetaCore.csproj",
-    "outputPath": "D:\\Program\\projects\\C#\\StackIter\\LinqMeta\\LinqMetaCore\\obj\\",
+    "projectUniqueName": "D:\\Program\\projects\\C#\\LinqMeta\\LinqMetaCore\\LinqMetaCore.csproj",
+    "projectName": "blowin.LinqMeta.Core",
+    "projectPath": "D:\\Program\\projects\\C#\\LinqMeta\\LinqMetaCore\\LinqMetaCore.csproj",
+    "outputPath": "D:\\Program\\projects\\C#\\LinqMeta\\LinqMetaCore\\obj\\",
     "projectStyle": "PackageReference",
     "crossTargeting": true,
     "fallbackFolders": [
@@ -12,17 +12,17 @@
     ],
     "originalTargetFrameworks": [
       "net461",
-      "netcoreapp2.0",
-      "netstandard1.3"
+      "netstandard2.0"
     ],
+    "sources": {
+      "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+      "https://api.nuget.org/v3/index.json": {}
+    },
     "frameworks": {
-      "netcoreapp2.0": {
-        "projectReferences": {}
-      },
       "net461": {
         "projectReferences": {}
       },
-      "netstandard1.3": {
+      "netstandard2.0": {
         "projectReferences": {}
       }
     },
@@ -33,12 +33,13 @@
     }
   },
   "frameworks": {
-    "netcoreapp2.0": {
+    "net461": {},
+    "netstandard2.0": {
       "dependencies": {
-        "Microsoft.NETCore.App": {
+        "NETStandard.Library": {
           "suppressParent": "All",
           "target": "Package",
-          "version": "[2.0.0, )",
+          "version": "[2.0.3, )",
           "autoReferenced": true
         }
       },
@@ -47,17 +48,6 @@
       ],
       "assetTargetFallback": true,
       "warn": true
-    },
-    "net461": {},
-    "netstandard1.3": {
-      "dependencies": {
-        "NETStandard.Library": {
-          "suppressParent": "All",
-          "target": "Package",
-          "version": "[1.6.1, )",
-          "autoReferenced": true
-        }
-      }
     }
   }
 }

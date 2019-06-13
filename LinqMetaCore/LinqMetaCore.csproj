@@ -1,9 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <AssemblyName>LinqMetaCore</AssemblyName>
         <RootNamespace>LinqMetaCore</RootNamespace>
-        <TargetFrameworks>net461;netstandard1.3</TargetFrameworks>
+        <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+        <LangVersion>5</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>blowin.LinqMeta.Core</PackageId>
+        <Title>blowin.LinqMeta.Core</Title>
+        <Authors>blowin</Authors>
+        <PackageProjectUrl>https://github.com/blowin/LinqMeta/tree/master/LinqMetaCore</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/blowin/LinqMeta/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/blowin/LinqMeta/tree/master/LinqMetaCore</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>linq;metaprogramming</PackageTags>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

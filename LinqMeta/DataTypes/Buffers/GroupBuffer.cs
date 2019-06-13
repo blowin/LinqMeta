@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LinqMetaCore.Intefaces;
@@ -6,7 +8,7 @@ using LinqMetaCore.Intefaces;
 namespace LinqMeta.DataTypes.Buffers
 {
     [StructLayout(LayoutKind.Auto)]
-    public class GroupBuffer<T> : IReadonlyBuffer<T>
+    public sealed class GroupBuffer<T> : IReadonlyBuffer<T>
     {
         internal const int ItemCount = 8;
         
@@ -108,11 +110,10 @@ namespace LinqMeta.DataTypes.Buffers
                         _it7 = add;
                         break;
                 }
-
             }
             _size += 1;
         }
-
+        
         #region Private methods
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,5 +135,6 @@ namespace LinqMeta.DataTypes.Buffers
         }
         
         #endregion
+
     }
 }

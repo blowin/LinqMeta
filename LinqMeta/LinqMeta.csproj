@@ -1,8 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net461;netstandard1.3</TargetFrameworks>
         <LangVersion>5</LangVersion>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>blowin.LinqMeta</PackageId>
+        <Title>blowin.LinqMeta</Title>
+        <Authors>blowin</Authors>
+        <PackageProjectUrl>https://github.com/blowin/LinqMeta/tree/master/LinqMeta</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/blowin/LinqMeta/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/blowin/LinqMeta/tree/master/LinqMeta</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>linq;metaprogramming</PackageTags>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
